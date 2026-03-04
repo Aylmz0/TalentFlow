@@ -1,13 +1,9 @@
 # TalentFlow Intelligence - Ekip Rolleri ve Sorumluluk Dağılımı
 
-Bu doküman, TalentFlow Intelligence projesinin 5 haftalık sprint planına uygun olarak geliştirilmesi için hazırlanmıştır. Ekip üyeleri, belirlenen Clean Architecture klasör yapısına ve teknoloji yığınına kesinlikle sadık kalacaktır.
-
-SQL yazmak yasaktır; tüm işlemler Django ORM üzerinden Repository Pattern kullanılarak yapılacaktır. Tüm yeni özellikler `feature/ozellik-adi` formatında yeni dallarda (branch) geliştirilecektir.
-
 ---
 
 ## 1. Lead Architect & Project Manager (PM)
-**Rol Sahibi:** [Senin Adın]
+**Rol Sahibi:** [Abdullah Yılmaz]
 **Odak Noktası:** Proje Omurgası, Veritabanı Mimarisi, DevOps ve Güvenlik.
 
 **Ana Sorumluluklar:**
@@ -22,7 +18,7 @@ SQL yazmak yasaktır; tüm işlemler Django ORM üzerinden Repository Pattern ku
 ---
 
 ## 2. AI & Data Engineer
-**Rol Sahibi:** [Takım Arkadaşı A]
+**Rol Sahibi:** [Ali Alper Taş]
 **Odak Noktası:** İş Mantığı (Business Logic), AI Entegrasyonu ve Arka Plan Servisleri.
 
 **Ana Sorumluluklar:**
@@ -37,7 +33,7 @@ SQL yazmak yasaktır; tüm işlemler Django ORM üzerinden Repository Pattern ku
 ---
 
 ## 3. Frontend & Interaction Developer
-**Rol Sahibi:** [Takım Arkadaşı B]
+**Rol Sahibi:** [Umut Can Kuş]
 **Odak Noktası:** UI/UX, Veri Görselleştirme ve SPA Etkileşimleri.
 
 **Ana Sorumluluklar:**

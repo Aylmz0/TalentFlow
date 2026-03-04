@@ -1,6 +1,3 @@
-Haklısın, lafı uzatmadan doğrudan kopyalayıp kullanabileceğin, sadece GitHub ve Jira akışına odaklanan o profesyonel rehber burada.
-
-Proje ana dizininde `GELISTIRICI_REHBERI.md` adında bir dosya oluştur ve içeriği aynen yapıştır:
 
 ---
 

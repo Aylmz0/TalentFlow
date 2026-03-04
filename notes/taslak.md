@@ -133,7 +133,6 @@ kullanıcıya sunulur ve UserProjects tablosuna kaydedilir.
 
 ## 5. Geliştirme Yol Haritası (Sprint Planı)
 
-_Dersin 5 haftalık sürecine uygun plan._
 
 - **1. Hafta:** Django kurulumu, PostgreSQL bağlantısı. User, Job, Skill, Application
     ve **UserProjects** modellerinin kodlanması.
