@@ -1,0 +1,52 @@
+[project]
+name = "talentflow"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+[tool.ruff]
+# Satır uzunluğu (Django'da 100-120 arası idealdir, iç içe ORM sorguları uzun olabilir)
+line-length = 110
+
+# Taranmayacak klasörler (Django'nun otomatik ürettiği dosyalar ve sanal ortam)
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "env",
+    "**/migrations/*",  # EN KRİTİK KISIM: Veritabanı göç dosyalarını denetleme
+    "manage.py"         # Django'nun kendi dosyasına dokunma
+]
+
+[tool.ruff.lint]
+# İzlenecek hata kodları
+# Eski listene 'DJ' (Django) eklendi!
+select = [
+    "E",    # pycodestyle errors
+    "F",    # Pyflakes
+    "I",    # isort (Import sıralaması)
+    "B",    # flake8-bugbear (Gizli buglar)
+    "UP",   # pyupgrade (Eski Python kodlarını yeniler)
+    "SIM",  # flake8-simplify (Gereksiz if/else'leri sadeleştirir)
+    "N",    # pep8-naming (İsimlendirme standartları)
+    "PTH",  # flake8-use-pathlib (Modern dosya yolları)
+    "PL",   # Pylint (Kurumsal standartlar)
+    "TID",  # flake8-tidy-imports (Düzenli importlar)
+    "C90",  # mccabe (Karmaşıklık)
+    "DJ",   # flake8-django (DJANGO'YA ÖZEL HATALARI YAKALAR)
+]
+
+# Göz ardı edilecek hata kodları
+ignore = [
+    "PLR2004", # Magic numbers (Django'daki max_length=255 gibi kullanımlar için gerekli)
+]
+
+[tool.ruff.lint.mccabe]
+# Bir fonksiyon en fazla 10 birim karmaşık olabilir (İç içe 4-5 if/for döngüsüne izin vermez)
+max-complexity = 10
+
+[tool.ruff.format]
+# Kod formatlama stili (Black standartları)
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
