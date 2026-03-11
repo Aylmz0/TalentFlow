@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     # Local Apps
     'apps.accounts',
     'apps.jobs',
+    'apps.talent_models',
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
