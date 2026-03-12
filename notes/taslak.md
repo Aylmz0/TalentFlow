@@ -19,6 +19,7 @@ felsefesini ve dersin "Bonus" şartlarını maksimize eder._
     bekletmeden yapmak için - Kritik Mühendislik).
 - **AI & Logic:** LiteLLM + Google Gemini API (Model Agnostic yapı, CV Analizi,
     Mülakat Simülasyonu, Tech Stack Önerisi).
+- **PDF Okuma:** opendataloader-pdf (CV dosyasından text çıkarma)
 - **Frontend:** Django Templates + Bootstrap 5 (Hızlı UI) + Chart.js (Yetenek Ağacı
     Grafikleri) + HTMX & Alpine.js (SPA hissi veren etkileşimler).
 - **DevOps:** Docker + GitHub Actions (CI/CD) + Render.com.
@@ -64,6 +65,7 @@ TalentFlow/
 ├── apps/ # (Public) Web ve API Katmanı (Views & URLs)
 │ ├── accounts/ # Giriş, Kayıt, Profil Yönetimi
 │ ├── jobs/ # İlan Listeleme, Detay Sayfası
+│ ├── talent_models/ # Skill, Application, UserProject modelleri (Hibrit DB yapısı)
 │ ├── dashboard/ # Skill Tree, Kanban Panosu ve **Proje Mimarı UI**
 │ └── interviews/ # AI Mülakat Ekranı
 │
