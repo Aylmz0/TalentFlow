@@ -30,3 +30,33 @@ class UserSkill(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.skill.name} (Lvl {self.level})"
+
+class Application(models.Model):
+    STATUS_CHOICES = [
+        ('APPLIED', 'Applied'),
+        ('INTERVIEW', 'Interview'),
+        ('OFFER', 'Offer'),
+        ('REJECTED', 'Rejected'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='applications')
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applications')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='APPLIED')
+    notes = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'job')
+
+    def __str__(self):
+        return f"{self.user.username} applied to {self.job.title}"
+
+class UserProject(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='projects')
+    idea = models.TextField()
+    recommended_stack = models.JSONField(blank=True, null=True)
+    roadmap = models.JSONField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Project Idea by {self.user.username}: {self.idea[:50]}..."
