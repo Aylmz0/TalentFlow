@@ -56,3 +56,4 @@ class ResumeParser:
             "skills": self.extract_skills(),
             "experience_years": self.extract_experience_years()
         }
+        # TAL-24: küçük düzenleme yapıldı
