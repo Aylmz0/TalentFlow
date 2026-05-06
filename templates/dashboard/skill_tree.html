@@ -2,37 +2,76 @@
 
 {% block content %}
 <style>
-    
-    body { background: #0b0f19 !important; font-family: 'Poppins', sans-serif; color: #f1f2f3; overflow-x: hidden; }
-    .cyber-card { 
-        background: rgba(17, 26, 41, 0.75); 
-        backdrop-filter: blur(12px); 
-        border: 1px solid rgba(255, 255, 255, 0.08); 
-        border-radius: 24px; 
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); 
-        transition: 0.4s; 
+    body {
+        font-family: 'Poppins', sans-serif;
+        color: #f1f2f3;
+        overflow-x: hidden;
     }
-    .cyber-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(79, 70, 229, 0.15); border-color: rgba(79, 70, 229, 0.3); }
-    .btn-neon { 
-        background: linear-gradient(135deg, #4f46e5 0%, #7e22ce 100%); 
-        color: white !important; border: none; border-radius: 15px; 
-        font-weight: 700; padding: 16px; 
-        text-transform: uppercase; letter-spacing: 1px;
-        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); 
+
+    .cyber-card {
+        background: rgba(17, 26, 41, 0.75);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        transition: 0.4s;
+    }
+
+    .cyber-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px rgba(79, 70, 229, 0.15);
+        border-color: rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-neon {
+        background: linear-gradient(135deg, #4f46e5 0%, #7e22ce 100%);
+        color: white !important;
+        border: none;
+        border-radius: 15px;
+        font-weight: 700;
+        padding: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
         transition: 0.3s;
     }
-    .btn-neon:hover { box-shadow: 0 0 25px rgba(126, 34, 206, 0.7); transform: scale(1.02); }
-    .chart-container { position: relative; height: 550px; width: 100%; }
-    .upload-area { 
-        border: 2px dashed rgba(160, 174, 192, 0.3); 
-        border-radius: 20px; padding: 50px; 
-        text-align: center; cursor: pointer; 
-        background: rgba(255, 255, 255, 0.02); 
+
+    .btn-neon:hover {
+        box-shadow: 0 0 25px rgba(126, 34, 206, 0.7);
+        transform: scale(1.02);
+    }
+
+    .chart-container {
+        position: relative;
+        height: 550px;
+        width: 100%;
+    }
+
+    .upload-area {
+        border: 2px dashed rgba(160, 174, 192, 0.3);
+        border-radius: 20px;
+        padding: 50px;
+        text-align: center;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.02);
         transition: 0.3s;
     }
-    .upload-area:hover { border-color: #4f46e5; background: rgba(79, 70, 229, 0.05); color: #e2e8f0; }
-    .text-glow { text-shadow: 0 0 10px rgba(79, 70, 229, 0.5); color: #e2e8f0; }
-    .bg-indigo-subtle { background-color: rgba(79, 70, 229, 0.1) !important; color: #7e22ce !important; }
+
+    .upload-area:hover {
+        border-color: #4f46e5;
+        background: rgba(79, 70, 229, 0.05);
+        color: #e2e8f0;
+    }
+
+    .text-glow {
+        text-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+        color: #e2e8f0;
+    }
+
+    .bg-indigo-subtle {
+        background-color: rgba(79, 70, 229, 0.1) !important;
+        color: #7e22ce !important;
+    }
 </style>
 
 <div class="container-fluid px-5 py-5">
@@ -42,7 +81,8 @@
             <h1 class="fw-700 text-glow display-5">YETENEK <span class="fw-300">ANALİZİ</span></h1>
         </div>
         <div class="col-md-4 text-md-end">
-            <span class="badge bg-indigo-subtle p-3 rounded-pill fw-600"> <i class="fas fa-satellite-dish me-2"></i> canlı analiz</span>
+            <span class="badge bg-indigo-subtle p-3 rounded-pill fw-600"> <i class="fas fa-satellite-dish me-2"></i>
+                canlı analiz</span>
         </div>
     </div>
 
@@ -55,13 +95,20 @@
                     </div>
                     <h3 class="fw-bold m-0 text-glow">Nöral Tarama</h3>
                 </div>
-                <p class="mb-5" style="color: #cbd5e0;">Özgeçmişinizi PDF formatında yükleyin. Yapay zeka motorumuz teknik yeteneklerinizi milisaniyeler içinde analiz edip puanlayacaktır.</p>
-                <div class="upload-area mb-5">
-                    <i class="fas fa-file-pdf fa-4x text-primary mb-4"></i>
-                    <h5 class="fw-bold text-light">CV Dosyasını Sürükleyiniz</h5>
-                    <p class="text-white-50 small">veya buraya tıklayınız</p>  
-                </div>
-                <button class="btn btn-neon w-100 mt-auto"> <i class="fas fa-bolt me-2"></i> Analizi Başlat</button>
+                <p class="mb-5" style="color: #cbd5e0;">Özgeçmişinizi PDF formatında yükleyin. Yapay zeka motorumuz
+                    teknik yeteneklerinizi milisaniyeler içinde analiz edip puanlayacaktır.</p>
+                <form method="POST" enctype="multipart/form-data" action="{% url 'accounts:cv_upload' %}">
+                    {% csrf_token %}
+                    <div class="upload-area mb-5" onclick="document.getElementById('cvInput').click()">
+                        <i class="fas fa-file-pdf fa-4x text-primary mb-4"></i>
+                        <h5 class="fw-bold text-light">CV Dosyasını Sürükleyiniz</h5>
+                        <p class="text-white-50 small">veya buraya tıklayınız</p>
+                        <input type="file" id="cvInput" name="cv_file" hidden accept=".pdf">
+                    </div>
+                    <button type="submit" class="btn btn-neon w-100 mt-auto"> 
+                        <i class="fas fa-bolt me-2"></i> Analizi Başlat
+                    </button>
+                </form>
             </div>
         </div>
 
@@ -71,9 +118,11 @@
                 <div class="chart-container">
                     <canvas id="skillRadar"></canvas>
                 </div>
-                <div class="mt-4 p-3 rounded-3" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+                <div class="mt-4 p-3 rounded-3"
+                    style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
                     <p class="small text-info m-0">
-                        <strong class="text-primary">Kritik Not:</strong> Grafikteki alanın hacmi, toplam teknik yetkinliğinizi gösterir. Alan ne kadar genişse, kurumsal eşleşme oranınız o kadar yüksektir.
+                        <strong class="text-primary">Kritik Not:</strong> Grafikteki alanın hacmi, toplam teknik
+                        yetkinliğinizi gösterir. Alan ne kadar genişse, kurumsal eşleşme oranınız o kadar yüksektir.
                     </p>
                 </div>
             </div>
@@ -81,6 +130,9 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const ctx = document.getElementById('skillRadar');
