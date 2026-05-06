@@ -3,7 +3,7 @@
 function kanbanBoard() {
     return {
         draggedCard: null,
-        
+
         handleDragStart(event, cardId) {
             this.draggedCard = event.target;
             event.dataTransfer.effectAllowed = 'move';
