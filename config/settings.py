@@ -92,3 +92,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# 🔑 AI & API KEYS
+
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+SERPAPI_API_KEY = os.environ.get("SERPAPI_API_KEY", "")
+
+# 🔥 LiteLLM config
+import litellm
+
+litellm.api_key = OPENAI_API_KEY
