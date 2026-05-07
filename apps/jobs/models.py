@@ -11,6 +11,16 @@ class Job(models.Model):
     description = models.TextField()
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default='KAGGLE')
     posted_date = models.DateTimeField(auto_now_add=True)
-    
+    # Bunu ekliyoruz:
+    status = models.CharField(
+        max_length=20, 
+        choices=[
+            ('basvuruldu', 'Başvuruldu'),
+            ('mulakat', 'Mülakat'),
+            ('teklif', 'Teklif'),
+            ('reddedildi', 'Reddedildi')
+        ],
+        default='basvuruldu'
+    )
     def __str__(self):
         return f"{self.title} at {self.company}"
