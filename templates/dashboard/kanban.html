@@ -7,9 +7,10 @@
     .kanban-wrapper {
         display: flex;
         gap: 1.5rem;
-        overflow-x: auto;
+        overflow-x: auto; /* Taşan kısmı yatayda kaydırılabilir yapar */
         padding-bottom: 2rem;
         min-height: 80vh;
+        flex-wrap: nowrap; /* ASLA alt alta atma, yan yana tut */
     }
 
     .kanban-column {
@@ -17,8 +18,8 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.05);
         border-radius: 20px;
-        min-width: 320px;
-        max-width: 320px;
+        min-width: 320px; /* Sütun genişliğini sabitliyoruz */
+        flex-shrink: 0; /* Ekran küçülünce sütunların ezilmesini engeller */
         padding: 20px;
     }
 
@@ -63,7 +64,7 @@
     .text-glow { text-shadow: 0 0 10px rgba(79, 70, 229, 0.5); }
 </style>
 {% endblock %}
-<!-- BURAYA YAPIŞTIR (Step 1) -->
+
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script src="{% static 'js/kanban_logic.js' %}"></script>
 
@@ -76,22 +77,20 @@
         </div>
         <div class="col-md-4 text-md-end">
             <button class="btn btn-neon"> <i class="fas fa-plus me-2"></i> Yeni Başvuru Ekle</button>
+     
         </div>
-    </div>
+  
 
+    </div>
     <div class="kanban-wrapper">
-        <!-- Sütun 1: Başvuruldu -->
-        <div class="kanban-column"@dragover.prevent 
-     @drop="handleDrop($event, 'basvuruldu')">
+        
+        <div class="kanban-column" @dragover.prevent @drop="handleDrop($event, 'basvuruldu')">
             <div class="column-header">
                 <span class="column-title">Başvuruldu</span>
                 <span class="badge bg-dark">2</span>
             </div>
             
-            <div class="job-card" draggable="true" 
-     @dragstart="handleDragStart($event, 'card-1')" 
-     @dragend="handleDragEnd($event)"
-            >
+            <div class="job-card" draggable="true" @dragstart="handleDragStart($event, 'card-1')" @dragend="handleDragEnd($event)">
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="company-name">Google</div>
                     <span class="status-badge">Uzaktan</span>
@@ -103,9 +102,7 @@
                 </div>
             </div>
 
-            <div class="job-card"draggable="true" 
-     @dragstart="handleDragStart($event, 'card-1')" 
-     @dragend="handleDragEnd($event)">
+            <div class="job-card" draggable="true" @dragstart="handleDragStart($event, 'card-2')" @dragend="handleDragEnd($event)">
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="company-name">Trendyol</div>
                     <span class="status-badge">Uzaktan</span>
@@ -117,18 +114,14 @@
                 </div>
             </div>
         </div>
-
-        <!-- Sütun 2: Mülakat / Teknik Test -->
-        <div class="kanban-column"@dragover.prevent 
-     @drop="handleDrop($event, 'mulakat')">
+         
+        <div class="kanban-column" @dragover.prevent @drop="handleDrop($event, 'mulakat')">
             <div class="column-header">
                 <span class="column-title">Mülakat / Test</span>
                 <span class="badge bg-dark">1</span>
             </div>
             
-            <div class="job-card"draggable="true" 
-     @dragstart="handleDragStart($event, 'card-1')" 
-     @dragend="handleDragEnd($event)">
+            <div class="job-card" draggable="true" @dragstart="handleDragStart($event, 'card-3')" @dragend="handleDragEnd($event)">
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="company-name">Trendyol</div>
                     <span class="status-badge" style="color: #fbbf24;">Case Bekliyor</span>
@@ -140,20 +133,14 @@
                 </div>
             </div>
         </div>
-
-        <!-- Diğer Sütunlar (Teklif ve Sonuçlanmış) buraya eklenebilir -->
-         <!-- Sütun 3: Teklif Aldım -->
-        <div class="kanban-column"@dragover.prevent 
-     @drop="handleDrop($event, 'teklif')">
+       
+        <div class="kanban-column" @dragover.prevent @drop="handleDrop($event, 'teklif')">
             <div class="column-header">
                 <span class="column-title">Teklif Aldım</span>
                 <span class="badge bg-success shadow-sm">1</span>
             </div>
             
-            <!-- Kazanan Kart -->
-            <div class="job-card" draggable="true" 
-     @dragstart="handleDragStart($event, 'card-1')" 
-     @dragend="handleDragEnd($event) style="border-color: rgba(34, 197, 94, 0.4); box-shadow: 0 0 15px rgba(34, 197, 94, 0.15);">
+            <div class="job-card" draggable="true" @dragstart="handleDragStart($event, 'card-4')" @dragend="handleDragEnd($event)" style="border-color: rgba(34, 197, 94, 0.4); box-shadow: 0 0 15px rgba(34, 197, 94, 0.15);">
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="company-name" style="color: #4ade80;">Hepsiburada</div>
                     <span class="status-badge bg-success text-white border-0" style="font-size: 0.6rem;">KABUL EDİLDİ</span>
@@ -165,19 +152,14 @@
                 </div>
             </div>
         </div>
-
-        <!-- Sütun 4: Sonuçlanmış / Arşiv -->
-        <div class="kanban-column"@dragover.prevent 
-     @drop="handleDrop($event, 'sonuclanmis')">
+        
+        <div class="kanban-column" @dragover.prevent @drop="handleDrop($event, 'sonuclanmis')">
             <div class="column-header">
                 <span class="column-title">Sonuçlanmış</span>
                 <span class="badge bg-dark">1</span>
             </div>
             
-            <!-- Red / Arşiv Kartı -->
-            <div class="job-card"  draggable="true" 
-     @dragstart="handleDragStart($event, 'card-1')" 
-     @dragend="handleDragEnd($event) style="opacity: 0.5; filter: grayscale(0.5);">
+            <div class="job-card" draggable="true" @dragstart="handleDragStart($event, 'card-5')" @dragend="handleDragEnd($event)" style="opacity: 0.5; filter: grayscale(0.5);">
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="company-name text-white-50">Startup X</div>
                     <span class="status-badge">Kapandı</span>
@@ -186,6 +168,7 @@
                 <div class="mt-2 text-danger small"><i class="fas fa-times-circle me-1"></i> Reddedildi</div>
             </div>
         </div>
+        
     </div>
 </div>
 {% endblock %}
