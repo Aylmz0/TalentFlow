@@ -1,36 +1,64 @@
+import os
 import litellm
+
 
 class AICoach:
 
     def __init__(self):
-        pass
+        self.api_key = os.getenv("OPENAI_API_KEY")
 
-     # Mülakat sorusu üretimi
+    # 🎯 Mülakat sorusu üretimi
     def generate_interview_questions(self, skills):
+        if not skills:
+            return "Skill bilgisi bulunamadı."
+
         prompt = f"""
-        Generate 5 technical interview questions for a candidate with these skills:
-        {', '.join(skills)}
+        Aşağıdaki teknolojilere göre 5 adet teknik mülakat sorusu üret:
+
+        Teknolojiler: {', '.join(skills)}
+
+        Sorular kısa ve anlaşılır olsun.
         """
 
-        response = litellm.completion(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}]
-        )
+        try:
+            response = litellm.completion(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                api_key=self.api_key
+            )
 
-        return response['choices'][0]['message']['content']
+            return response['choices'][0]['message']['content']
 
+        except Exception as e:
+            print("AI Coach hata:", e)
+            return "Mülakat soruları oluşturulamadı."
 
     # 🚀 Tech stack önerisi
     def suggest_tech_stack(self, skills):
+        if not skills:
+            return "Skill bilgisi bulunamadı."
+
         prompt = f"""
-        Suggest a modern tech stack for a developer with these skills:
-        {', '.join(skills)}
-        Include backend, frontend and cloud tools.
+        Kullanıcının bildiği teknolojilere göre uygun bir proje tech stack öner:
+
+        Teknolojiler: {', '.join(skills)}
+
+        Backend, frontend ve devops araçlarını öner.
         """
 
-        response = litellm.completion(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}]
-        )
+        try:
+            response = litellm.completion(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                api_key=self.api_key
+            )
 
-        return response['choices'][0]['message']['content']
+            return response['choices'][0]['message']['content']
+
+        except Exception as e:
+            print("AI Coach hata:", e)
+            return "Tech stack önerisi oluşturulamadı."

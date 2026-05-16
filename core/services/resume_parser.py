@@ -11,7 +11,6 @@ class ResumeParser:
         else:
             self.text = text.lower() if text else ""
 
-    # 🔥 PDF → TEXT
     def extract_text_from_pdf(self, pdf_path):
         try:
             reader = PdfReader(pdf_path)
@@ -28,7 +27,7 @@ class ResumeParser:
             print("PDF okuma hatası:", e)
             return ""
 
-    # 🔍 Skill extraction
+   
     def extract_skills(self):
         skills_db = [
             "python", "java", "c", "c++", "c#", "javascript",
@@ -43,14 +42,14 @@ class ResumeParser:
 
         return found_skills
 
-    # ⏳ Experience extraction
+    #
     def extract_experience_years(self):
         match = re.search(r"(\d+)\s+years", self.text)
         if match:
             return int(match.group(1))
         return 0
 
-    # 🚀 Main parse
+   
     def parse(self):
         return {
             "skills": self.extract_skills(),
