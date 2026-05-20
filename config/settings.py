@@ -10,18 +10,26 @@ env = environ.Env(
 
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-oy*wepl@w61yw7mm3s%j#j)b=tdzr^*k-ewuqjj4bc(n6md-!8')
+# 🔐 SECURITY
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-oy*wepl@w61yw7mm3s%j#j)b=tdzr^*k-ewuqjj4bc(n6md-!8'
+)
 
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# 🌐 CSRF
 CSRF_TRUSTED_ORIGINS = [
     'https://*.replit.dev',
     'https://*.repl.co',
     'https://*.replit.app',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
 ]
 
+# 📦 APPS
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,6 +45,7 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'accounts.User'
 
+# ⚙️ MIDDLEWARE
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -50,6 +59,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
+# 🎨 TEMPLATE
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -67,10 +77,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# 🗄 DATABASE
 DATABASES = {
-    'default': env.db(default=os.environ.get('DATABASE_URL', ''))
+    'default': env.db(default=os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3'))
 }
 
+# 🔐 PASSWORD
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -78,26 +90,29 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+# 🌍 LANGUAGE & TIME
+LANGUAGE_CODE = 'tr'
+TIME_ZONE = 'Europe/Istanbul'
 USE_I18N = True
 USE_TZ = True
 
+# 📁 STATIC
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# 📂 MEDIA
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# 🔢 DEFAULT ID
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# 🔑 AI & API KEYS
 
+# 🔑 API KEYS
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 SERPAPI_API_KEY = os.environ.get("SERPAPI_API_KEY", "")
 
-# 🔥 LiteLLM config
+# 🤖 LiteLLM
 import litellm
-
 litellm.api_key = OPENAI_API_KEY
