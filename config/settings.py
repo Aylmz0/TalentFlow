@@ -33,6 +33,9 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.jobs',
     'apps.talent_models',
+
+    # 🔥 Django-Q2 EKLENDİ
+    'django_q',
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -92,12 +95,22 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# 🔑 AI & API KEYS
 
+# 🔑 AI & API KEYS
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 SERPAPI_API_KEY = os.environ.get("SERPAPI_API_KEY", "")
 
-# 🔥 LiteLLM config
+# 🤖 LiteLLM config
 import litellm
-
 litellm.api_key = OPENAI_API_KEY
+
+# 🚀 DJANGO-Q2 CONFIG (EN ÖNEMLİ KISIM)
+Q_CLUSTER = {
+    'name': 'TalentFlow',
+    'workers': 2,
+    'timeout': 90,
+    'retry': 120,
+    'queue_limit': 50,
+    'bulk': 10,
+    'orm': 'default',
+}
