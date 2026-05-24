@@ -21,10 +21,13 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
-# CSRF Trusted Origins for development
+# CSRF Trusted Origins for development & Replit envs
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+    'https://*.replit.dev',
+    'https://*.repl.co',
+    'https://*.replit.app',
 ]
 
 # Application definition
@@ -75,6 +78,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
+# Eğer DATABASE_URL environment'ta varsa PostgreSQL/MySQL kullanır, yoksa SQLite fallback çalışır
 DATABASES = {
     'default': env.db(default='sqlite:///db.sqlite3')
 }
@@ -98,9 +102,16 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+# Whitenoise static storage optimization for production
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Media files (User Uploads - CVs)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 🔑 AI & API KEYS (Loaded via django-environ securely)
+OPENAI_API_KEY = env('OPENAI_API_KEY', default='')
+SERPAPI_API_KEY = env('SERPAPI_API_KEY', default='')
