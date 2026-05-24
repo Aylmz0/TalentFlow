@@ -17,11 +17,10 @@ felsefesini ve dersin "Bonus" şartlarını maksimize eder._
 - **Veritabanı:** PostgreSQL (JSONB desteği, İlişkisel Yapı ve Render uyumu).
 - **Arka Plan İşlemleri:** Django-Q2 (veya Celery) (SerpApi sorgularını kullanıcıyı
     bekletmeden yapmak için - Kritik Mühendislik).
-- **AI & Logic:** LiteLLM + Google Gemini API (Model Agnostic yapı, CV Analizi,
+- **AI & Logic:** LiteLLM Entegrasyonu (Model Agnostic yapı, CV Analizi, AI Mülakat, Tech Stack Önerisi).
     Mülakat Simülasyonu, Tech Stack Önerisi).
 - **PDF Okuma:** opendataloader-pdf (CV dosyasından text çıkarma)
-- **Frontend:** Django Templates + Bootstrap 5 (Hızlı UI) + Chart.js (Yetenek Ağacı
-    Grafikleri) + HTMX & Alpine.js (SPA hissi veren etkileşimler).
+- **Frontend:** Django Templates + Bootstrap 5 (Hızlı UI) + Chart.js (Yetenek Ağacı Grafikleri) + HTMX & Alpine.js (SPA hissi veren etkileşimler) + **Sortable.js** (Kanban etkileşimleri).
 - **DevOps:** Docker + GitHub Actions (CI/CD) + Render.com.
 
 ## 2. Veritabanı Mimarisi (Hibrit & İlişkisel)
@@ -74,13 +73,13 @@ TalentFlow/
 │ │ ├── ingestion_service.py # SerpApi/Kaggle Veri Çekme Motoru
 │ │ ├── matchmaking_service.py # Eşleştirme ve Gap Analysis Algoritması
 │ │ ├── resume_parser.py # CV Okuma (PDF -> Text -> Skills)
-│ │ └── ai_coach.py # Gemini Mülakat, Puanlama ve **Tech Stack Önerisi**
+│ │ └── ai_coach.py # LiteLLM Mülakat, Puanlama ve **Tech Stack Önerisi**
 │ └── interfaces/
 │
 ├── infrastructure/ # (Private) Dış Kaynaklar ve Veritabanı
 │ ├── repositories/ # Django ORM Sorguları (Örn: JobRepository)
 │ ├── serp_api/ # Google Jobs Client
-│ └── gemini_client/ # AI Client Wrapper (LiteLLM)
+│ └── ai_client/ # AI Client Wrapper (LiteLLM)
 │
 ├── static/ # CSS, JS (Chart.js, HTMX, Alpine.js), Images
 ├── media/ # Kullanıcıların yüklediği CV dosyaları
@@ -119,7 +118,7 @@ günceller. Sayfa yenilenmez.
 - **Değer:** Jüriye "Süreç Yönetimi" ve N-N ilişki kullanımını gösterir.
 **D. AI Kariyer Koçu (Mock Interview)**
 - **Senaryo:** Kullanıcı bir ilana özel "Mülakat Başlat" der.
-- **AI İşlemi:** Gemini, ilanın açıklamasını okur ve o pozisyona uygun 3 teknik soru
+- **AI İşlemi:** LiteLLM, ilanın açıklamasını okur ve o pozisyona uygun 3 teknik soru
 üretir.
 - **Simülasyon:** Kullanıcı cevapları yazar, AI cevapları puanlar (0-100) ve geri
 bildirim yapar. Sonuç MockInterviews tablosuna kaydedilir.
