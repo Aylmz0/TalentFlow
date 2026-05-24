@@ -2,31 +2,66 @@ import requests
 import threading
 
 class IngestionService:
+    """
+    SerpApi üzerinden iş ilanlarını çeken ve arka planda asenkron olarak 
+    çalışabilen veri toplama (Ingestion) servis katmanı.
+    """
 
     def __init__(self, api_key):
         self.api_key = api_key
 
-
-    # 🔥 Arka plan iş
     def fetch_jobs_async(self, query="software engineer"):
-        thread = threading.Thread(target=self.fetch_jobs, args=(query,))
+        """
+        İş ilanlarını çekme işlemini ana iş parçacığını (main thread) bloklamadan 
+        arka planda (background thread) başlatır.
+        """
+        thread = threading.Thread(
+            target=self.fetch_jobs, 
+            args=(query,), 
+            name="SerpApiIngestionThread"
+        )
+        thread.daemon = True  # Uygulama kapandığında arka plan thread'i de düzgün sonlanır
         thread.start()
 
-
-    # 🌐 SerpApi çağrısı
     def fetch_jobs(self, query):
-        url = "https://serpapi.com/search"
+        """
+        SerpApi'ye istek atarak iş ilanlarını sorgular ve veriyi işler.
+        Ağ hataları ve geçersiz API durumlarına karşı dayanıklıdır.
+        """
+        if not self.api_key:
+            print("SerpApi Hatası: API Anahtarı (SERPAPI_API_KEY) boş veya tanımlanmamış.")
+            return []
 
+        url = "https://serpapi.com/search"
         params = {
             "engine": "google_jobs",
             "q": query,
             "api_key": self.api_key
         }
 
-        response = requests.get(url, params=params)
+        try:
+            # timeout=10 ekleyerek ağ takılmalarında thread'in sonsuza kadar askıda kalmasını önlüyoruz
+            response = requests.get(url, params=params, timeout=10)
+            
+            if response.status_code == 200:
+                try:
+                    data = response.json()
+                    jobs = data.get("jobs_results", [])
+                    print(f"SerpApi Başarılı: '{query}' araması için {len(jobs)} adet iş ilanı çekildi.")
+                    return jobs
+                except ValueError:
+                    print("SerpApi Hatası: Sunucudan geçersiz JSON yanıtı alındı.")
+                    return []
+            elif response.status_code == 401 or response.status_code == 403:
+                print(f"SerpApi Yetkilendirme Hatası (HTTP {response.status_code}): Lütfen API anahtarınızı kontrol edin.")
+                return []
+            else:
+                print(f"SerpApi Sunucu Hatası: HTTP {response.status_code} - Yanıt: {response.text[:200]}")
+                return []
 
-        if response.status_code == 200:
-            data = response.json()
-            print("Jobs fetched:", len(data.get("jobs_results", [])))
-        else:
-            print("SerpApi error")
+        except requests.Timeout:
+            print("SerpApi Hatası: İstek zaman aşımına uğradı (Timeout). Ağ bağlantısını kontrol edin.")
+            return []
+        except requests.RequestException as e:
+            print(f"SerpApi Ağ Bağlantı Hatası: {e}")
+            return []
