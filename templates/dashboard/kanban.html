@@ -1,9 +1,10 @@
-
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kariyer Takip Hattı | TalentFlow{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Kanban Panosu Özel Stilleri */
     .kanban-wrapper {
         display: flex;
         gap: 1.5rem;
@@ -20,6 +21,12 @@
         min-width: 320px;
         max-width: 320px;
         padding: 20px;
+        transition: background 0.3s;
+    }
+
+    .kanban-column.drag-over {
+        background: rgba(79, 70, 229, 0.1);
+        border-color: rgba(79, 70, 229, 0.4);
     }
 
     .column-header {
@@ -31,9 +38,14 @@
         border-bottom: 2px solid rgba(79, 70, 229, 0.4);
     }
 
-    .column-title { font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; color: #e2e8f0; }
+    .column-title {
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        color: #e2e8f0;
+    }
 
-    /* İş Başvuru Kartları */
     .job-card {
         background: rgba(30, 41, 59, 0.8);
         border: 1px solid rgba(255, 255, 255, 0.08);
@@ -41,7 +53,10 @@
         padding: 16px;
         margin-bottom: 1rem;
         transition: 0.3s;
+        cursor: grab;
     }
+
+    .job-card:active { cursor: grabbing; }
 
     .job-card:hover {
         transform: translateY(-5px);
@@ -49,9 +64,18 @@
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
     }
 
-    .company-name { font-weight: 700; font-size: 1.1rem; color: #ffffff; }
-    .job-role { font-size: 0.85rem; color: #818cf8; font-weight: 500; }
-    
+    .company-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #ffffff;
+    }
+
+    .job-role {
+        font-size: 0.85rem;
+        color: #818cf8;
+        font-weight: 500;
+    }
+
     .status-badge {
         font-size: 0.7rem;
         padding: 4px 8px;
@@ -60,12 +84,23 @@
         color: #94a3b8;
     }
 
-    .text-glow { text-shadow: 0 0 10px rgba(79, 70, 229, 0.5); }
+    .text-glow {
+        text-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+    }
+
+    .btn-neon {
+        background: linear-gradient(135deg, #4f46e5 0%, #7e22ce 100%);
+        color: white !important;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 10px 20px;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-5 py-5">
+<div class="container-fluid px-5 py-5" x-data="kanbanBoard()">
     <div class="row mb-5 align-items-center">
         <div class="col-md-8 text-start">
             <p class="text-primary text-uppercase small fw-600 mb-1" style="letter-spacing: 3px;">TalentFlow</p>
@@ -78,13 +113,13 @@
 
     <div class="kanban-wrapper">
         <!-- Sütun 1: Başvuruldu -->
-        <div class="kanban-column">
+        <div class="kanban-column" @dragover.prevent @drop="handleDrop($event, 'basvuruldu')">
             <div class="column-header">
                 <span class="column-title">Başvuruldu</span>
                 <span class="badge bg-dark">2</span>
             </div>
-            
-            <div class="job-card">
+
+            <div class="job-card" draggable="true" @dragstart="handleDragStart($event, 'card-1')" @dragend="handleDragEnd($event)">
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="company-name">Google</div>
                     <span class="status-badge">Uzaktan</span>
@@ -92,11 +127,12 @@
                 <div class="job-role mb-3">Machine Learning Engineer</div>
                 <div class="d-flex justify-content-between align-items-center">
                     <small class="text-white-50"><i class="far fa-clock me-1"></i> 3g önce</small>
-                    <img src="https://logo.clearbit.com/google.com" class="rounded" width="24" height="24" onerror="this.src='https://ui-avatars.com/api/?name=G&background=4f46e5&color=fff'">
+                    <img src="https://logo.clearbit.com/google.com" class="rounded" width="24" height="24"
+                        onerror="this.src='https://ui-avatars.com/api/?name=G&background=4f46e5&color=fff'">
                 </div>
             </div>
 
-            <div class="job-card">
+            <div class="job-card" draggable="true" @dragstart="handleDragStart($event, 'card-2')" @dragend="handleDragEnd($event)">
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="company-name">Trendyol</div>
                     <span class="status-badge">Uzaktan</span>
@@ -104,19 +140,20 @@
                 <div class="job-role mb-3">Backend developer</div>
                 <div class="d-flex justify-content-between align-items-center">
                     <small class="text-white-50"><i class="far fa-clock me-1"></i> 1g önce</small>
-                    <img src="https://logo.clearbit.com/trendyol.com" class="rounded" width="24" height="24" onerror="this.src='https://ui-avatars.com/api/?name=T&background=4f46e5&color=fff'">
+                    <img src="https://logo.clearbit.com/trendyol.com" class="rounded" width="24" height="24"
+                        onerror="this.src='https://ui-avatars.com/api/?name=T&background=4f46e5&color=fff'">
                 </div>
             </div>
         </div>
 
         <!-- Sütun 2: Mülakat / Teknik Test -->
-        <div class="kanban-column">
+        <div class="kanban-column" @dragover.prevent @drop="handleDrop($event, 'mulakat')">
             <div class="column-header">
                 <span class="column-title">Mülakat / Test</span>
                 <span class="badge bg-dark">1</span>
             </div>
-            
-            <div class="job-card">
+
+            <div class="job-card" draggable="true" @dragstart="handleDragStart($event, 'card-3')" @dragend="handleDragEnd($event)">
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="company-name">Trendyol</div>
                     <span class="status-badge" style="color: #fbbf24;">Case Bekliyor</span>
@@ -129,16 +166,14 @@
             </div>
         </div>
 
-        <!-- Diğer Sütunlar (Teklif ve Sonuçlanmış) buraya eklenebilir -->
-         <!-- Sütun 3: Teklif Aldım -->
-        <div class="kanban-column">
+        <!-- Sütun 3: Teklif Aldım -->
+        <div class="kanban-column" @dragover.prevent @drop="handleDrop($event, 'teklif')">
             <div class="column-header">
                 <span class="column-title">Teklif Aldım</span>
                 <span class="badge bg-success shadow-sm">1</span>
             </div>
-            
-            <!-- Kazanan Kart -->
-            <div class="job-card" style="border-color: rgba(34, 197, 94, 0.4); box-shadow: 0 0 15px rgba(34, 197, 94, 0.15);">
+
+            <div class="job-card" draggable="true" @dragstart="handleDragStart($event, 'card-4')" @dragend="handleDragEnd($event)" style="border-color: rgba(34, 197, 94, 0.4); box-shadow: 0 0 15px rgba(34, 197, 94, 0.15);">
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="company-name" style="color: #4ade80;">Hepsiburada</div>
                     <span class="status-badge bg-success text-white border-0" style="font-size: 0.6rem;">KABUL EDİLDİ</span>
@@ -146,20 +181,20 @@
                 <div class="job-role mb-3">Junior Data Scientist</div>
                 <div class="d-flex justify-content-between align-items-center">
                     <small class="text-white-50"><i class="fas fa-file-signature me-1"></i> Sözleşme Bekliyor</small>
-                    <img src="https://logo.clearbit.com/hepsiburada.com" class="rounded" width="24" height="24" onerror="this.src='https://ui-avatars.com/api/?name=H&background=22c55e&color=fff'">
+                    <img src="https://logo.clearbit.com/hepsiburada.com" class="rounded" width="24" height="24"
+                        onerror="this.src='https://ui-avatars.com/api/?name=H&background=22c55e&color=fff'">
                 </div>
             </div>
         </div>
 
-        <!-- Sütun 4: Sonuçlanmış / Arşiv -->
-        <div class="kanban-column">
+        <!-- Sütun 4: Sonuçlanmış -->
+        <div class="kanban-column" @dragover.prevent @drop="handleDrop($event, 'sonuclanmis')">
             <div class="column-header">
                 <span class="column-title">Sonuçlanmış</span>
                 <span class="badge bg-dark">1</span>
             </div>
-            
-            <!-- Red / Arşiv Kartı -->
-            <div class="job-card" style="opacity: 0.5; filter: grayscale(0.5);">
+
+            <div class="job-card" draggable="true" @dragstart="handleDragStart($event, 'card-5')" @dragend="handleDragEnd($event)" style="opacity: 0.5; filter: grayscale(0.5);">
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="company-name text-white-50">Startup X</div>
                     <span class="status-badge">Kapandı</span>
@@ -170,4 +205,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/kanban_logic.js' %}"></script>
 {% endblock %}
