@@ -28,6 +28,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.replit.dev',
     'https://*.repl.co',
     'https://*.replit.app',
+    'https://talentflow.yilmazcs.xyz',
 ]
 
 # Application definition
