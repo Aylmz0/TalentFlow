@@ -1,5 +1,8 @@
 import os
+
+import litellm
 from django.conf import settings
+
 
 class AICoach:
     """
@@ -15,7 +18,6 @@ class AICoach:
 
     def _get_api_key(self):
         # LiteLLM'in kullanacağı API anahtarını döndürür ve yapılandırır
-        import litellm
         litellm.api_key = self.api_key
         return self.api_key
 
@@ -96,12 +98,14 @@ class AICoach:
         LiteLLM completion çağrısını güvenli bir şekilde yürüten yardımcı metot.
         """
         try:
-            import litellm
             self._get_api_key()
             
             # API anahtarı boşsa doğrudan bilgilendirme dönelim (crash yerine gracefully handle)
             if not litellm.api_key:
-                return "Hata: OpenAI API anahtarı (OPENAI_API_KEY) tanımlanmamış. Lütfen .env dosyanızı kontrol edin."
+                return (
+                    "Hata: OpenAI API anahtarı (OPENAI_API_KEY) tanımlanmamış. "
+                    "Lütfen .env dosyanızı kontrol edin."
+                )
 
             response = litellm.completion(
                 model="gpt-3.5-turbo",

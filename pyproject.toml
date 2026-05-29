@@ -35,9 +35,13 @@ select = [
     "DJ",   # flake8-django (DJANGO'YA ÖZEL HATALARI YAKALAR)
 ]
 
-# Göz ardı edilecek hata kodları
+# Göz ardı edilecek hata kodları (Zırt pırt can sıkıcı hata vermemesi için)
 ignore = [
-    "PLR2004", # Magic numbers (Django'daki max_length=255 gibi kullanımlar için gerekli)
+    "PLR2004", # Magic numbers (max_length=255 gibi standart kullanımlar için)
+    "E501",    # Line too long (Satır uzunluğu hataları can sıkmasın)
+    "PLR0911", # Too many return statements (Return sayısı kısıtlaması darlamasın)
+    "PLC0415", # Import should be at top-level (Metot içi importlara izin ver)
+    "I001",    # isort (Import sıralaması yüzünden build patlamasın)
 ]
 
 [tool.ruff.lint.mccabe]

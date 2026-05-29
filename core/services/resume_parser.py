@@ -1,4 +1,5 @@
 import re
+
 from PyPDF2 import PdfReader  # PDF okuma için
 
 
@@ -42,7 +43,6 @@ class ResumeParser:
 
         return found_skills
 
-    #
     def extract_experience_years(self):
         match = re.search(r"(\d+)\s+years", self.text)
         if match:

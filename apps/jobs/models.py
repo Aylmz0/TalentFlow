@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Job(models.Model):
     SOURCE_CHOICES = [
         ('KAGGLE', 'Kaggle Dataset'),

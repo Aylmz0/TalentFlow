@@ -1,5 +1,7 @@
-import requests
 import threading
+
+import requests
+
 
 class IngestionService:
     """
@@ -28,9 +30,10 @@ class IngestionService:
         SerpApi'ye istek atarak iş ilanlarını sorgular ve veriyi işler.
         Ağ hataları ve geçersiz API durumlarına karşı dayanıklıdır.
         """
+        jobs = []
         if not self.api_key:
             print("SerpApi Hatası: API Anahtarı (SERPAPI_API_KEY) boş veya tanımlanmamış.")
-            return []
+            return jobs
 
         url = "https://serpapi.com/search"
         params = {
@@ -48,20 +51,19 @@ class IngestionService:
                     data = response.json()
                     jobs = data.get("jobs_results", [])
                     print(f"SerpApi Başarılı: '{query}' araması için {len(jobs)} adet iş ilanı çekildi.")
-                    return jobs
                 except ValueError:
                     print("SerpApi Hatası: Sunucudan geçersiz JSON yanıtı alındı.")
-                    return []
-            elif response.status_code == 401 or response.status_code == 403:
-                print(f"SerpApi Yetkilendirme Hatası (HTTP {response.status_code}): Lütfen API anahtarınızı kontrol edin.")
-                return []
+            elif response.status_code in {401, 403}:
+                print(
+                    f"SerpApi Yetkilendirme Hatası (HTTP {response.status_code}): "
+                    "Lütfen API anahtarınızı kontrol edin."
+                )
             else:
                 print(f"SerpApi Sunucu Hatası: HTTP {response.status_code} - Yanıt: {response.text[:200]}")
-                return []
 
         except requests.Timeout:
             print("SerpApi Hatası: İstek zaman aşımına uğradı (Timeout). Ağ bağlantısını kontrol edin.")
-            return []
         except requests.RequestException as e:
             print(f"SerpApi Ağ Bağlantı Hatası: {e}")
-            return []
+
+        return jobs
