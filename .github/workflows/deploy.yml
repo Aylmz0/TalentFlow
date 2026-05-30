@@ -1,0 +1,67 @@
+name: Deploy TalentFlow to VPS
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS using rsync (SCP)
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "."
+          target: "~/TalentFlow"
+          strip_components: 0
+
+      - name: Execute Remote SSH commands (Migrate & Restart Server)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # 1. Proje dizinine giriş yap
+            cd ~/TalentFlow
+
+            # 2. Sanal ortamı aktif et (veya yoksa oluştur)
+            if [ ! -d ".venv" ]; then
+              python3 -m venv .venv
+            fi
+            
+            # Sanal ortamı aktif et
+            source .venv/bin/activate
+
+            # 3. Bağımlılıkları kur/güncelle
+            pip install --upgrade pip
+            pip install -r requirements.txt
+
+            # 4. Veritabanı göçlerini (migrations) güvenle uygula
+            python manage.py migrate --noinput
+
+            # 5. Statik dosyaları topla (Production ortamı için şart)
+            python manage.py collectstatic --noinput
+
+            # 6. Django sunucusunu tmux içinde güvenli ve kesintisiz arka planda yeniden başlat
+            # Eğer halihazırda 'talentflow' adında bir tmux oturumu varsa kapatıp temizce açar
+            tmux has-session -t talentflow 2>/dev/null
+            if [ $? -eq 0 ]; then
+              echo "Existing tmux session found. Restarting..."
+              tmux send-keys -t talentflow:0 C-c Enter
+              sleep 2
+              tmux send-keys -t talentflow:0 "source .venv/bin/activate" Enter
+              tmux send-keys -t talentflow:0 "python manage.py runserver 0.0.0.0:8000" Enter
+            else
+              echo "No active tmux session. Creating new session 'talentflow'..."
+              tmux new-session -d -s talentflow "source .venv/bin/activate && python manage.py runserver 0.0.0.0:8000"
+            fi
+
+            echo "Deployment successfully completed! Django server is running in tmux."
