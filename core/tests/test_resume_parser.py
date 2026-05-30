@@ -1,5 +1,7 @@
 from django.test import SimpleTestCase
+
 from core.services.resume_parser import ResumeParser
+
 
 class TestResumeParser(SimpleTestCase):
 

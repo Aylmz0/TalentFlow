@@ -1,5 +1,7 @@
 from django.test import SimpleTestCase
+
 from core.services.matchmaking_service import MatchmakingService
+
 
 class TestMatchmakingService(SimpleTestCase):
 

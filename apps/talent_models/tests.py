@@ -1,7 +1,9 @@
 
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
-from apps.jobs.models import Job # Senin Job modelin buradan geliyor
+
+from apps.jobs.models import Job  # Senin Job modelin buradan geliyor
+
 
 class KanbanDBTest(TestCase):
     def setUp(self):

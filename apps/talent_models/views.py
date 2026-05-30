@@ -1,9 +1,10 @@
-from django.shortcuts import render
 
 # Create your views here.
-from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+
 from apps.jobs.models import Job  # Modelin bulunduğu doğru yol
+
 
 def update_job_status(request, pk):
     if request.method == "POST":
