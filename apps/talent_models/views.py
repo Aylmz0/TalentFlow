@@ -26,4 +26,27 @@ def skill_tree(request):
     return render(request, 'dashboard/skill_tree.html')
 
 def kanban(request):
-    return render(request, 'dashboard/kanban.html')
+    # Eğer veritabanında hiç iş ilanı yoksa, otomatik olarak seed_jobs çalıştır
+    if Job.objects.count() == 0:
+        from django.core.management import call_command
+        try:
+            call_command('seed_jobs')
+        except Exception as e:
+            print("Kanban otomatik veri yükleme hatası:", e)
+
+    jobs = Job.objects.all().order_by('-posted_date')
+    context = {
+        'basvuruldu': jobs.filter(status='basvuruldu'),
+        'mulakat': jobs.filter(status='mulakat'),
+        'teklif': jobs.filter(status='teklif'),
+        'reddedildi': jobs.filter(status='reddedildi'),
+    }
+    return render(request, 'dashboard/kanban.html', context)
+
+
+def start_interview(request, job_pk):
+    return HttpResponse("Mock Interview Page Placeholder")
+
+
+def submit_interview(request, interview_pk):
+    return HttpResponse("Submit Interview Placeholder")
