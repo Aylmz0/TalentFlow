@@ -27,17 +27,18 @@ python manage.py migrate --noinput
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
-# Restart Django in tmux
+# Restart Django in tmux (Guaranteed to run in bash regardless of default login shell)
 echo "Managing tmux session..."
 if tmux has-session -t talentflow 2>/dev/null; then
-  echo "Existing tmux session 'talentflow' found. Restarting..."
-  tmux send-keys -t talentflow:0 C-c Enter
-  sleep 2
-  tmux send-keys -t talentflow:0 "source .venv/bin/activate" Enter
-  tmux send-keys -t talentflow:0 "python manage.py runserver 0.0.0.0:8000" Enter
-else
-  echo "No active tmux session. Creating new session 'talentflow'..."
-  tmux new-session -d -s talentflow "source .venv/bin/activate && python manage.py runserver 0.0.0.0:8000"
+  echo "Stopping existing tmux session 'talentflow'..."
+  tmux kill-session -t talentflow
+  sleep 1
 fi
+
+echo "Creating new tmux session 'talentflow' running bash..."
+tmux new-session -d -s talentflow -n "django" bash
+sleep 1
+tmux send-keys -t talentflow:django "source .venv/bin/activate" Enter
+tmux send-keys -t talentflow:django "python manage.py runserver 0.0.0.0:8000" Enter
 
 echo "=== Deployment Successfully Completed! ==="
