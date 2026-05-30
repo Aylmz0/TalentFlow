@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}CV İyileştirme | TalentFlow{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-5 py-5">
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-8 text-start">
+            <p class="text-primary text-uppercase small ls-3 fw-600 mb-1" style="letter-spacing: 3px;">TalentFlow CV Coach</p>
+            <h1 class="fw-700 display-5">CV <span class="fw-300">İYİLEŞTİRME</span></h1>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <span class="badge bg-dark p-3 rounded-pill fw-600 border border-accent"><i class="bi bi-cpu me-1 text-accent"></i> AI Destekli Analiz</span>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <div class="col-xl-5 col-lg-5">
+            <div class="card premium-card p-5 text-start">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="bg-indigo-subtle text-light p-3 rounded-3 me-3">
+                        <i class="bi bi-file-earmark-text fs-4 text-accent"></i>
+                    </div>
+                    <h3 class="fw-bold m-0">CV PDF</h3>
+                </div>
+                <p class="mb-4" style="color: #cbd5e0;">CV'nizi PDF olarak yükleyin, yapay zeka kelime seçimlerinizi, cümle yapılarınızı ve profesyonel ifade biçiminizi analiz edip iyileştirme önerileri sunsun.</p>
+
+                <form method="POST" enctype="multipart/form-data" x-data="{ loading: false, fileName: '' }" @submit="loading = true">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="form-label text-white-50 small mb-2">CV PDF'inizi Seçin</label>
+                        <div class="drop-zone p-5 text-center rounded-3" style="border: 2px dashed rgba(201,165,92,0.3); border-radius: 12px; background: rgba(0,0,0,0.15); cursor: pointer;" @click="$refs.fileInput.click()" @dragover.prevent="$event.currentTarget.style.borderColor = '#c9a55c'" @dragleave.prevent="$event.currentTarget.style.borderColor = 'rgba(201,165,92,0.3)'" @drop.prevent="const f = $event.dataTransfer.files[0]; if(f) { $refs.fileInput.files = $event.dataTransfer.files; fileName = f.name; }">
+                            <i class="bi bi-cloud-upload text-accent" style="font-size: 2.5rem;"></i>
+                            <p class="mt-2 mb-1 text-white-50 small" x-text="fileName || 'PDF dosyanızı sürükleyin veya tıklayın'"></p>
+                            <p class="text-white-50 small m-0" style="font-size: 0.75rem;" x-show="!fileName">yalnızca .pdf</p>
+                        </div>
+                        <input type="file" name="cv_pdf" accept=".pdf" class="d-none" x-ref="fileInput" @change="fileName = $event.target.files[0]?.name || ''">
+                    </div>
+                    <button type="submit" class="btn btn-premium w-100 py-3" :disabled="loading">
+                        <span x-show="!loading"><i class="bi bi-stars me-2"></i>CV'yi Analiz Et</span>
+                        <span x-show="loading" style="display: none;">
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            AI CV'nizi Analiz Ediyor...
+                        </span>
+                    </button>
+                </form>
+
+                {% if original_text %}
+                <div class="mt-4 p-3 rounded-3" style="background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.04);">
+                    <details>
+                        <summary class="small text-accent fw-600 cursor-pointer"><i class="bi bi-eye me-1"></i>PDF'den Okunan Metin</summary>
+                        <p class="small text-white-50 mt-2 mb-0 font-monospace" style="white-space: pre-wrap; max-height: 300px; overflow-y: auto;">{{ original_text }}</p>
+                    </details>
+                </div>
+                {% endif %}
+
+                {% if error %}
+                <div class="mt-4 p-3 rounded-3" style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);">
+                    <p class="small text-danger m-0"><i class="bi bi-exclamation-triangle me-1"></i>{{ error }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-xl-7 col-lg-7">
+            {% if result %}
+            <div class="d-flex flex-column gap-4">
+                {% if result.strengths %}
+                <div class="card premium-card p-5 text-start">
+                    <h4 class="fw-bold mb-3"><i class="bi bi-check-circle text-accent me-2"></i>Güçlü Yönler</h4>
+                    <ul class="d-flex flex-column gap-2 m-0" style="list-style: none; padding: 0;">
+                        {% for s in result.strengths %}
+                        <li class="d-flex align-items-start gap-2 p-2 rounded-2" style="background: rgba(16,185,129,0.04);">
+                            <span class="text-accent flex-shrink-0 mt-1"><i class="bi bi-check-circle-fill small"></i></span>
+                            <span class="text-white-50 small">{{ s }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if result.suggestions %}
+                <div class="card premium-card p-5 text-start">
+                    <h4 class="fw-bold mb-3"><i class="bi bi-arrow-repeat text-accent me-2"></i>İyileştirme Önerileri</h4>
+                    <div class="d-flex flex-column gap-3">
+                        {% for item in result.suggestions %}
+                        <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);">
+                            <div class="row g-3 align-items-start">
+                                <div class="col">
+                                    <div class="p-2 rounded-2 mb-2" style="background: rgba(239,68,68,0.06); border-left: 2px solid rgba(239,68,68,0.3);">
+                                        <span class="small text-danger fw-600 d-block mb-1">Önce</span>
+                                        <span class="small text-white-50">{{ item.original }}</span>
+                                    </div>
+                                    <div class="p-2 rounded-2" style="background: rgba(16,185,129,0.06); border-left: 2px solid rgba(16,185,129,0.3);">
+                                        <span class="small text-success fw-600 d-block mb-1">Sonra</span>
+                                        <span class="small text-white">{{ item.improved }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if item.reason %}
+                            <p class="small text-accent mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>{{ item.reason }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if result.improved_version %}
+                <div class="card premium-card p-5 text-start">
+                    <h4 class="fw-bold mb-3"><i class="bi bi-file-earmark-check text-accent me-2"></i>Düzeltilmiş CV</h4>
+                    <div class="p-4 rounded-3 font-monospace" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.04); white-space: pre-wrap; line-height: 1.7;">
+                        {{ result.improved_version }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="card premium-card p-5 h-100 d-flex align-items-center justify-content-center text-center" style="min-height: 400px;">
+                <div>
+                    <div class="p-4 rounded-circle mb-4 border border-accent d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: rgba(201,165,92,0.08);">
+                        <i class="bi bi-file-earmark-text text-accent fs-2"></i>
+                    </div>
+                    <h4 class="fw-600 text-light mb-2">Henüz Analiz Yapılmadı</h4>
+                    <p class="text-white-50 small" style="max-width: 360px; margin: 0 auto;">Sol taraftan CV PDF'inizi yükleyip "CV'yi Analiz Et" butonuna tıklayın. Yapay zeka kelime seçimlerinizi, cümle yapılarınızı ve profesyonel ifade biçiminizi değerlendirsin.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

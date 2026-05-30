@@ -10,6 +10,11 @@
             </a>
         </li>
         <li>
+            <a href="{% url 'dashboard:cv_improve' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'cv_improve' %}active{% endif %}">
+                <i class="bi bi-file-earmark-check me-2"></i> CV İyileştirme
+            </a>
+        </li>
+        <li>
             <a href="{% url 'dashboard:kanban' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'kanban' %}active{% endif %}">
                 <i class="bi bi-columns-gap me-2"></i> Kariyer Hattı
             </a>

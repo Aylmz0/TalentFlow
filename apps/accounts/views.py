@@ -38,7 +38,8 @@ def register_view(request):
         elif User.objects.filter(email=email).exists():
             messages.error(request, 'Bu e-posta adresi zaten kayıtlı.')
         else:
-            user = User.objects.create_user(
+            User = get_user_model()
+            user = User.objects.create_user(  # pyright: ignore
                 username=username,
                 email=email,
                 password=password,
@@ -60,7 +61,7 @@ def cv_upload(request):
     user_model = get_user_model()
     user = request.user
     if not user.is_authenticated:
-        user = user_model.objects.first() or user_model.objects.create_user(username="konuk_kullanici", email="guest@talentflow.com")
+        user = user_model.objects.first() or user_model.objects.create_user(username="konuk_kullanici", email="guest@talentflow.com")  # type: ignore[attr-defined]
 
     if request.method == 'POST':
         cv_file = request.FILES.get('cv_file')
@@ -70,11 +71,11 @@ def cv_upload(request):
 
         try:
             # 1. Dosyayı kullanıcı profiline kaydet
-            user.cv_file = cv_file
+            user.cv_file = cv_file  # type: ignore[attr-defined]
             user.save()
 
             # 2. PDF'ten metin çıkar ve yetenekleri parse et
-            parser = ResumeParser(pdf_path=user.cv_file.path)
+            parser = ResumeParser(pdf_path=user.cv_file.path)  # type: ignore[attr-defined]
             parsed = parser.parse()
             found_skills = parsed['skills']
 

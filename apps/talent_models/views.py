@@ -153,7 +153,7 @@ def start_interview(request, job_pk):
     user_model = get_user_model()
     user = request.user
     if not user.is_authenticated:
-        user = user_model.objects.first() or user_model.objects.create_user(username="konuk_kullanici", email="guest@talentflow.com")
+        user = user_model.objects.first() or user_model.objects.create_user(username="konuk_kullanici", email="guest@talentflow.com")  # type: ignore[attr-defined]  # type: ignore[attr-defined]
 
     job = get_object_or_404(Job, pk=job_pk)
     
@@ -371,7 +371,7 @@ def architect(request):
     user_model = get_user_model()
     user = request.user
     if not user.is_authenticated:
-        user = user_model.objects.first() or user_model.objects.create_user(username="konuk_kullanici", email="guest@talentflow.com")
+        user = user_model.objects.first() or user_model.objects.create_user(username="konuk_kullanici", email="guest@talentflow.com")  # type: ignore[attr-defined]
         
     current_project = None
     recommended_stack = {}
@@ -425,7 +425,7 @@ FALLBACK_PROJECTS = [
 def project_ideas(request):
     user = request.user
     if not user.is_authenticated:
-        user = get_user_model().objects.first() or get_user_model().objects.create_user(username="konuk_kullanici", email="guest@talentflow.com")
+        user = get_user_model().objects.first() or get_user_model().objects.create_user(username="konuk_kullanici", email="guest@talentflow.com")  # type: ignore[attr-defined]
 
     user_skills = UserSkill.objects.filter(user=user).select_related('skill').order_by('level')[:3]
     skill_names = [us.skill.name for us in user_skills]
@@ -472,3 +472,67 @@ JSON formatında ver, markdown kullanma:
 
     from django.http import HttpResponse
     return HttpResponse(ideas_html)
+
+
+def cv_improve(request):
+    result = None
+    original_text = ""
+    error = None
+
+    if request.method == "POST":
+        pdf_file = request.FILES.get("cv_pdf")
+        if pdf_file and pdf_file.name.endswith(".pdf"):
+            try:
+                text_parts = []
+                import PyPDF2
+                reader = PyPDF2.PdfReader(pdf_file)
+                for page in reader.pages:
+                    text_parts.append(page.extract_text())
+                original_text = "\n".join(text_parts).strip()
+            except Exception as e:
+                error = f"PDF okunamadı: {str(e)}"
+
+            if original_text:
+                try:
+                    ai = AICoach()
+                    prompt = f"""Aşağıdaki CV metnini analiz ederek 3 bölüm halinde JSON çıktısı ver:
+
+1. "strengths": CV'deki güçlü yönler, iyi kullanılmış ifadeler (madde madde, Türkçe)
+2. "suggestions": Kelime seçimi, cümle yapısı ve kendini ifade biçimiyle ilgili spesifik düzeltme önerileri. Her öneri için "original" (mevcut hali) ve "improved" (düzeltilmiş hali) olacak.
+3. "improved_version": CV'nin tamamen düzeltilmiş, daha profesyonel ve etkileyici versiyonu.
+
+JSON şeması:
+{{
+  "strengths": ["madde 1", "madde 2"],
+  "suggestions": [
+    {{"original": "eski ifade", "improved": "yeni ifade", "reason": "neden daha iyi olduğu"}}
+  ],
+  "improved_version": "tüm cv'nin düzeltilmiş hali"
+}}
+
+Sadece JSON döndür, markdown kullanma. JSON dışında hiçbir açıklama ekleme.
+
+CV METNİ:
+{original_text}"""
+
+                    raw = ai._execute_completion(prompt, "")
+                    if raw and "Hata" not in raw:
+                        import json, re
+                        clean = raw.strip()
+                        if "```json" in clean:
+                            clean = clean.split("```json")[1].split("```")[0].strip()
+                        elif "```" in clean:
+                            clean = clean.split("```")[1].split("```")[0].strip()
+                        result = json.loads(clean)
+                    else:
+                        error = "AI yanıt vermedi. Lütfen tekrar deneyin."
+                except Exception as e:
+                    error = f"Bir hata oluştu: {str(e)}"
+        else:
+            error = "Lütfen geçerli bir PDF dosyası yükleyin."
+
+    return render(request, "dashboard/cv_improve.html", {
+        "result": result,
+        "original_text": original_text,
+        "error": error,
+    })
