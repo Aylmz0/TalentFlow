@@ -1,0 +1,41 @@
+<nav class="sidebar d-flex flex-column p-3 text-white" style="width: 280px; height: 100vh; position: fixed; top: 0; left: 0;">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+        <span class="fs-4 fw-bold text-primary">TalentFlow</span>
+    </a>
+    <hr style="border-color: rgba(255,255,255,0.1);">
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a href="{% url 'dashboard:skill_tree' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'skill_tree' %}active{% endif %}">
+                Yetenek Analizi
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'dashboard:kanban' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'kanban' %}active{% endif %}">
+                Kariyer Hattı
+            </a>
+        </li>
+        <li>
+            <a href="#" class="nav-link text-white">
+                İş İlanları
+            </a>
+        </li>
+        <li>
+            <a href="#" class="nav-link text-white">
+                AI Mülakat
+            </a>
+        </li>
+    </ul>
+    <hr style="border-color: rgba(255,255,255,0.1);">
+    <div class="dropdown">
+        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="https://ui-avatars.com/api/?name=User&background=4f46e5&color=fff" alt="" width="32" height="32" class="rounded-circle me-2">
+            <strong>Kullanıcı</strong>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+            <li><a class="dropdown-item" href="#">Profil</a></li>
+            <li><a class="dropdown-item" href="#">Ayarlar</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Çıkış Yap</a></li>
+        </ul>
+    </div>
+</nav>

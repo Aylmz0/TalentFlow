@@ -20,3 +20,11 @@ def update_job_status(request, pk):
         
         # Sayfanın yenilenmesine gerek olmadığı için "İçerik Yok" (204) dönüyoruz
         return HttpResponse(status=204)
+
+from django.shortcuts import render
+
+def skill_tree(request):
+    return render(request, 'dashboard/skill_tree.html')
+
+def kanban(request):
+    return render(request, 'dashboard/kanban.html')

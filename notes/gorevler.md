@@ -285,3 +285,52 @@ Bu dosya, Jira'da verilecek gorevleri ve ekip sorumluluklarini tutar.
 
 - **ST-2:** Hata ve Bos Durum (Empty State) Tasarimlari
   - Veri olmayan ilan listeleri veya bos dashboardlar icin "Empty State" tasarimlarini ekle
+
+---
+
+# 6. Hafta (Final Cilalama ve Pürüzlerin Giderilmesi)
+
+## TASK 14
+**Atanan:** Umut Can Kus (Frontend Developer)
+**Epic:** TAL-4 UI/UX ve Veri Gorsellestirme
+**Baslik:** UI/UX Puruzlerinin Giderilmesi ve Gorsel Iyilestirmeler
+
+**Aciklama:** Umut'a ait olan UI arayuzundeki tum puzurlerin giderilmesi, responsive uyumluluk, gecis animasyonlari, form alanlarindaki dogrulama hata gosterimleri ve genel gorsel estetigin premium duzeye cikarilmasi.
+
+**Etkilenecek Klasor/Dosyalar:**
+- templates/base.html
+- templates/dashboard/
+- static/css/
+
+**Alt Gorevler:**
+
+- **ST-1:** Arayuz Puruzlerinin ve Hizalamalarin Giderilmesi
+  - Responsive ve hizalama hatalarinin tum sayfalarda ve farkli ekran boyutlarinda giderilmesi
+- **ST-2:** Form Dogrulamalari ve Feedback Arayuzleri
+  - CV yukleme ve form islemlerinde yukleme (spinner/loading) ve hata geri bildirimlerinin (toast/alert) eklenmesi
+- **ST-3:** Estetik ve Gecis Efektleri
+  - Buton hover animasyonlari, modern kart tasarimlarinin cilalanmasi ve mikro-etkilesimlerin finalize edilmesi
+
+---
+
+## TASK 15
+**Atanan:** Ali Alper Tas (AI & Data Engineer)
+**Epic:** TAL-3 Veri Motoru ve AI Servis Mantigi
+**Baslik:** Backend & AI Puruzlerinin Giderilmesi ve Prompt Optimizasyonu
+
+**Aciklama:** Alper'in backend tarafindaki AI (LiteLLM) entegrasyonu puruzlerinin giderilmesi, prompt yanitlarinin tutarliliginin artirilmasi, JSON veri formatlarinin guvenli parse edilmesi ve API hata yonetimi.
+
+**Etkilenecek Klasor/Dosyalar:**
+- core/services/ai_coach.py
+- apps/talent_models/models.py
+- infrastructure/repositories/
+
+**Alt Gorevler:**
+
+- **ST-1:** LiteLLM Promptlarinin Son Haline Getirilmesi
+  - Mulakat sorulari ve gap analysis promptlarinin kalitesini ve JSON yanit tutarliligini artiracak sekilde optimize edilmesi
+- **ST-2:** Hata Yakalama ve Exception Handling
+  - AI API servislerinin yavas yanit vermesi veya yanit vermemesi (timeout) durumlarinda uygulamanin cokmesini onleyecek try-except bloklarinin tamamlanmasi
+- **ST-3:** JSON Veri Pars Etme ve Kayit Optimizasyonu
+  - Veritabanina kaydedilecek AI ciktilarinin JSON formatlarinin guvenli sekilde parse edilmesi ve kayit mantiginin optimize edilmesi
+

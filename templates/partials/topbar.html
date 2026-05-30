@@ -1,0 +1,28 @@
+<nav class="navbar navbar-dark d-md-none px-3" style="background: rgba(17, 26, 41, 0.95); border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+    <a class="navbar-brand text-primary fw-bold" href="/">TalentFlow</a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</nav>
+
+<!-- Mobile Sidebar Offcanvas -->
+<div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="sidebarOffcanvas" style="background: rgba(17, 26, 41, 0.95) !important; backdrop-filter: blur(10px);">
+    <div class="offcanvas-header border-bottom border-secondary">
+        <h5 class="offcanvas-title text-primary fw-bold">TalentFlow</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item">
+                <a href="{% url 'dashboard:skill_tree' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'skill_tree' %}active{% endif %}">
+                    Yetenek Analizi
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'dashboard:kanban' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'kanban' %}active{% endif %}">
+                    Kariyer Hattı
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
