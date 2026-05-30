@@ -97,16 +97,22 @@
                 </div>
                 <p class="mb-5" style="color: #cbd5e0;">Özgeçmişinizi PDF formatında yükleyin. Yapay zeka motorumuz
                     teknik yeteneklerinizi milisaniyeler içinde analiz edip puanlayacaktır.</p>
-                <form method="POST" enctype="multipart/form-data" action="{% url 'accounts:cv_upload' %}">
+                <form method="POST" enctype="multipart/form-data" action="{% url 'accounts:cv_upload' %}" x-data="{ loading: false, fileName: '' }" @submit="if(fileName) { loading = true } else { $event.preventDefault(); }">
                     {% csrf_token %}
                     <div class="upload-area mb-5" onclick="document.getElementById('cvInput').click()">
-                        <i class="fas fa-file-pdf fa-4x text-primary mb-4"></i>
-                        <h5 class="fw-bold text-light">CV Dosyasını Sürükleyiniz</h5>
-                        <p class="text-white-50 small">veya buraya tıklayınız</p>
-                        <input type="file" id="cvInput" name="cv_file" hidden accept=".pdf">
+                        <i class="fas fa-file-pdf fa-4x text-primary mb-4" x-show="!fileName"></i>
+                        <i class="fas fa-check-circle fa-4x text-success mb-4" x-show="fileName" style="display: none;"></i>
+                        <h5 class="fw-bold text-light" x-text="fileName ? fileName : 'CV Dosyasını Sürükleyiniz'">CV Dosyasını Sürükleyiniz</h5>
+                        <p class="text-white-50 small" x-show="!fileName">veya buraya tıklayınız</p>
+                        <p class="text-success small fw-bold" x-show="fileName" style="display: none;">Dosya seçildi, analize hazır.</p>
+                        <input type="file" id="cvInput" name="cv_file" hidden accept=".pdf" @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
                     </div>
-                    <button type="submit" class="btn btn-neon w-100 mt-auto"> 
-                        <i class="fas fa-bolt me-2"></i> Analizi Başlat
+                    <button type="submit" class="btn btn-neon w-100 mt-auto" :disabled="loading || !fileName"> 
+                        <span x-show="!loading"><i class="fas fa-bolt me-2"></i> Analizi Başlat</span>
+                        <span x-show="loading" style="display: none;">
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Yapay Zeka Analiz Ediyor...
+                        </span>
                     </button>
                 </form>
             </div>
