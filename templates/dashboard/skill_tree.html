@@ -56,7 +56,14 @@
                 </div>
                 
                 <div class="chart-container" style="min-height: 350px; position: relative;">
-                    {% if has_skills %}
+                    {% if has_skills or is_mock %}
+                    {% if is_mock %}
+                    <div class="position-absolute top-0 start-50 translate-middle-x mt-2 z-3 text-center w-100 px-3">
+                        <span class="badge bg-warning-subtle text-warning px-3 py-2 border border-warning-subtle rounded-pill font-monospace small" style="box-shadow: 0 0 15px rgba(251, 191, 36, 0.15); backdrop-filter: blur(8px);">
+                            ⚡ DEMO MODU: Örnek Profil Yetenek İzdüşümü
+                        </span>
+                    </div>
+                    {% endif %}
                     <canvas id="skillRadar"></canvas>
                     {% else %}
                     <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center py-5">
@@ -69,10 +76,10 @@
                     {% endif %}
                 </div>
                 
-                {% if has_skills %}
+                {% if has_skills or is_mock %}
                 <div class="mt-4 p-3 rounded-3" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
                     <p class="small text-info m-0">
-                        <strong class="text-primary">Kritik Not:</strong> Grafikteki alanın hacmi, toplam teknik yetkinliğinizi gösterir. Alan ne kadar genişse, kurumsal eşleşme oranınız o kadar yüksektir.
+                        <strong class="text-primary">Kritik Not:</strong> {% if is_mock %}Bu bir örnek yetenek şablonudur. Kendi özgeçmişinizi yüklediğinizde bu grafik gerçek yeteneklerinizle güncellenecektir.{% else %}Grafikteki alanın hacmi, toplam teknik yetkinliğinizi gösterir. Alan ne kadar genişse, kurumsal eşleşme oranınız o kadar yüksektir.{% endif %}
                     </p>
                 </div>
                 {% endif %}
@@ -83,7 +90,7 @@
 {% endblock %}
 
 {% block extra_js %}
-{% if has_skills %}
+{% if has_skills or is_mock %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const ctx = document.getElementById('skillRadar');

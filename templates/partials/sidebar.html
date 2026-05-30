@@ -15,13 +15,8 @@
             </a>
         </li>
         <li>
-            <a href="#" class="nav-link text-white">
-                İş İlanları
-            </a>
-        </li>
-        <li>
-            <a href="#" class="nav-link text-white">
-                AI Mülakat
+            <a href="{% url 'dashboard:architect' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'architect' %}active{% endif %}">
+                Portfolyo Mimarı
             </a>
         </li>
     </ul>

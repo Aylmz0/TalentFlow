@@ -77,13 +77,14 @@ class AICoach:
                 "database": {{"primary": "...", "foss_alternative": "..."}},
                 "devops": {{"primary": "...", "foss_alternative": "..."}}
             }},
-            "roadmap": [
-                "1. Adım: ...",
-                "2. Adım: ...",
-                "3. Adım: ...",
-                "4. Adım: ...",
-                "5. Adım: ..."
-            ]
+            "roadmap": {{
+                "directory_structure": "root-directory/\\n├── ...",
+                "technical_decisions": [
+                    "...",
+                    "...",
+                    "..."
+                ]
+            }}
         }}
         
         JSON şemasının geçerli ve parse edilebilir olmasına son derece dikkat et. JSON haricinde hiçbir açıklama veya ek metin ekleme.

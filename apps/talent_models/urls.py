@@ -11,4 +11,5 @@ urlpatterns = [
     path('kanban/', views.kanban, name='kanban'),
     path('interview/start/<int:job_pk>/', views.start_interview, name='start_interview'),
     path('interview/submit/<int:interview_pk>/', views.submit_interview, name='submit_interview'),
+    path('architect/', views.architect, name='architect'),
 ]
