@@ -62,3 +62,14 @@ class UserProject(models.Model):
 
     def __str__(self):
         return f"Project Idea by {self.user.username}: {self.idea[:50]}..."
+
+class MockInterview(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mock_interviews')
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='mock_interviews')
+    questions = models.JSONField(blank=True, null=True)
+    user_answers = models.JSONField(blank=True, null=True)
+    score = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Mock Interview for {self.user.username} - {self.job.title} (Score: {self.score})"
