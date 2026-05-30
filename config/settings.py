@@ -114,5 +114,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # 🔑 AI & API KEYS (Loaded via django-environ securely)
-OPENAI_API_KEY = env('OPENAI_API_KEY', default='')
+OPENROUTER_API_KEY = env('OPENROUTER_API_KEY', default='')
 SERPAPI_API_KEY = env('SERPAPI_API_KEY', default='')
+AI_MODEL = env('AI_MODEL', default='google/gemini-flash-1.5')
+AI_BASE_URL = 'https://openrouter.ai/api/v1'
