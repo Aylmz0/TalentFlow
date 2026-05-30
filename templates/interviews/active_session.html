@@ -3,44 +3,6 @@
 
 {% block title %}AI Mülakat Hattı | TalentFlow{% endblock %}
 
-{% block extra_css %}
-<style>
-    .circular-progress {
-        position: relative;
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        background: conic-gradient(var(--progress-color, #c9a55c) calc(var(--progress-val, 0) * 1%), rgba(255, 255, 255, 0.05) 0);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    }
-    .circular-progress::before {
-        content: "";
-        position: absolute;
-        width: 130px;
-        height: 130px;
-        border-radius: 50%;
-        background-color: #0d0d0d;
-    }
-    .progress-value {
-        position: relative;
-        font-size: 2.2rem;
-        font-weight: 700;
-        color: #fff;
-    }
-    .q-card {
-        border-left: 4px solid rgba(255, 255, 255, 0.1);
-        transition: all 0.3s ease;
-    }
-    .q-card:hover {
-        border-left-color: var(--color-accent);
-        background: rgba(255, 255, 255, 0.01);
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="container-fluid px-5 py-5">
     <div class="row mb-5 align-items-center">
@@ -157,7 +119,7 @@
                     <h4 class="fw-600 text-white mb-4 fs-3" x-text="questions[step - 1]"></h4>
                     <div class="mb-4">
                         <label class="form-label text-white-50 small mb-2">Yanıtınız:</label>
-                        <textarea class="form-control bg-dark border-secondary text-white font-monospace p-4" rows="8" placeholder="Teknik detayları ve kavramları kullanarak detaylı bir cevap yazınız..." x-model="answers[step - 1]" style="border-radius: 12px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;"></textarea>
+                        <textarea class="form-control bg-dark border-secondary text-white font-monospace p-4 form-input-dark" rows="8" placeholder="Teknik detayları ve kavramları kullanarak detaylı bir cevap yazınız..." x-model="answers[step - 1]" style="border-radius: 12px;"></textarea>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mt-4">
                         <button class="btn btn-outline-secondary px-4" @click="step--" :disabled="step === 1"><i class="bi bi-chevron-left me-1"></i>Önceki Soru</button>

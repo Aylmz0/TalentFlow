@@ -122,7 +122,7 @@ class AICoach:
         """
         return self._execute_completion(prompt, "Puanlama yapılamadı.")
 
-    def _execute_completion(self, prompt, error_message):
+    def _execute_completion(self, prompt, error_message) -> str:
         """
         LiteLLM completion çağrısını güvenli bir şekilde yürüten yardımcı metot.
         """
@@ -144,19 +144,20 @@ class AICoach:
             )
 
             # LiteLLM Pydantic nesnesi olarak döndüğü için nesne niteliği üzerinden okuyoruz
-            if hasattr(response, 'choices') and len(response.choices) > 0:
-                content = response.choices[0].message.content
+            if hasattr(response, 'choices') and len(response.choices) > 0:  # type: ignore[arg-type]
+                content = response.choices[0].message.content  # type: ignore[index]
             # Sözlük fallback
             elif isinstance(response, dict) and 'choices' in response:
                 content = response['choices'][0]['message']['content']
             else:
                 return error_message
 
-            # LLM bazen çıktıya markdown json kod blokları ekleyebilir (```json ... ```). Bunları temizleyelim.
-            if content:
-                content = re.sub(r"^```json\s*", "", content, flags=re.MULTILINE)
-                content = re.sub(r"^```\s*", "", content, flags=re.MULTILINE)
-                content = content.strip()
+            if not content:
+                return error_message
+
+            content = re.sub(r"^```json\s*", "", content, flags=re.MULTILINE)
+            content = re.sub(r"^```\s*", "", content, flags=re.MULTILINE)
+            content = content.strip()
 
             return content
 

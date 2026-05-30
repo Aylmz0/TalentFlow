@@ -196,15 +196,15 @@
                         <input type="hidden" name="action" value="create_application">
                         <div class="mb-3">
                             <label class="form-label text-white-50 small fw-600">Pozisyon Başlığı *</label>
-                            <input type="text" name="title" class="form-control bg-dark border-secondary text-white p-3" required placeholder="örn. Senior Python Developer" style="border-radius: 10px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;">
+                            <input type="text" name="title" class="form-control bg-dark border-secondary text-white p-3 form-input-dark" required placeholder="örn. Senior Python Developer">
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-white-50 small fw-600">Şirket Adı *</label>
-                            <input type="text" name="company" class="form-control bg-dark border-secondary text-white p-3" required placeholder="örn. TechCorp" style="border-radius: 10px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;">
+                            <input type="text" name="company" class="form-control bg-dark border-secondary text-white p-3 form-input-dark" required placeholder="örn. TechCorp">
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-white-50 small fw-600">İlan Açıklaması</label>
-                            <textarea name="description" class="form-control bg-dark border-secondary text-white font-monospace p-3" rows="5" placeholder="İlan metnini buraya yapıştırın..." style="border-radius: 10px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;"></textarea>
+                            <textarea name="description" class="form-control bg-dark border-secondary text-white font-monospace p-3 form-input-dark" rows="5" placeholder="İlan metnini buraya yapıştırın..."></textarea>
                         </div>
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-premium flex-grow-1 py-3" :disabled="submitting">
@@ -230,16 +230,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<style>
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
-    z-index: 1055; display: flex; align-items: center; justify-content: center;
-}
-.modal-dialog-wrapper {
-    width: 100%; display: flex; justify-content: center;
-}
-</style>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="{% static 'js/kanban_logic.js' %}"></script>
 <script>

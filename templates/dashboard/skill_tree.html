@@ -223,17 +223,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<style>
-.chart-slide {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    opacity: 0; pointer-events: none; transition: opacity 0.35s ease;
-}
-.chart-slide.active { opacity: 1; pointer-events: auto; }
-.htmx-request .htmx-request-show,
-.htmx-request.htmx-request-show { display: inline !important; }
-.htmx-request .htmx-request-hide,
-.htmx-request.htmx-request-hide { display: none !important; }
-</style>
 {% if has_skills or is_mock %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>

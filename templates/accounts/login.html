@@ -3,12 +3,6 @@
 
 {% block title %}Giriş Yap | TalentFlow{% endblock %}
 
-{% block extra_css %}
-<style>
-    .auth-wrapper { min-height: 80vh; display: flex; align-items: center; }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="container-fluid px-5 py-5 auth-wrapper">
     <div class="row justify-content-center w-100">
@@ -26,11 +20,11 @@
                     {% csrf_token %}
                     <div class="mb-4">
                         <label class="form-label text-white-50 small fw-600">Kullanıcı Adı</label>
-                        <input type="text" name="username" class="form-control bg-dark border-secondary text-white p-3" required style="border-radius: 10px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;">
+                        <input type="text" name="username" class="form-control bg-dark border-secondary text-white p-3 form-input-dark" required>
                     </div>
                     <div class="mb-4">
                         <label class="form-label text-white-50 small fw-600">Şifre</label>
-                        <input type="password" name="password" class="form-control bg-dark border-secondary text-white p-3" required style="border-radius: 10px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;">
+                        <input type="password" name="password" class="form-control bg-dark border-secondary text-white p-3 form-input-dark" required>
                     </div>
                     <button type="submit" class="btn btn-premium w-100 py-3 fw-bold">Giriş Yap</button>
                 </form>
