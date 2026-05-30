@@ -4,99 +4,6 @@
 {% block title %}Kariyer Takip Hattı | TalentFlow{% endblock %}
 
 {% block extra_css %}
-<style>
-    .kanban-wrapper {
-        display: flex;
-        gap: 1.5rem;
-        overflow-x: auto;
-        padding-bottom: 2rem;
-        min-height: 80vh;
-    }
-
-    .kanban-column {
-        background: rgba(17, 26, 41, 0.6);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 20px;
-        min-width: 320px;
-        max-width: 320px;
-        padding: 20px;
-        transition: background 0.3s;
-    }
-
-    .kanban-column.drag-over {
-        background: rgba(79, 70, 229, 0.1);
-        border-color: rgba(79, 70, 229, 0.4);
-    }
-
-    .column-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.8rem;
-        border-bottom: 2px solid rgba(79, 70, 229, 0.4);
-    }
-
-    .column-title {
-        font-weight: 700;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 1px;
-        color: #e2e8f0;
-    }
-
-    .job-card {
-        background: rgba(30, 41, 59, 0.8);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 16px;
-        margin-bottom: 1rem;
-        transition: 0.3s;
-        cursor: grab;
-    }
-
-    .job-card:active { cursor: grabbing; }
-
-    .job-card:hover {
-        transform: translateY(-5px);
-        border-color: rgba(79, 70, 229, 0.5);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .company-name {
-        font-weight: 700;
-        font-size: 1.1rem;
-        color: #ffffff;
-    }
-
-    .job-role {
-        font-size: 0.85rem;
-        color: #818cf8;
-        font-weight: 500;
-    }
-
-    .status-badge {
-        font-size: 0.7rem;
-        padding: 4px 8px;
-        border-radius: 6px;
-        background: rgba(255, 255, 255, 0.05);
-        color: #94a3b8;
-    }
-
-    .text-glow {
-        text-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
-    }
-
-    .btn-neon {
-        background: linear-gradient(135deg, #4f46e5 0%, #7e22ce 100%);
-        color: white !important;
-        border: none;
-        border-radius: 12px;
-        font-weight: 600;
-        padding: 10px 20px;
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -104,10 +11,10 @@
     <div class="row mb-5 align-items-center">
         <div class="col-md-8 text-start">
             <p class="text-primary text-uppercase small fw-600 mb-1" style="letter-spacing: 3px;">TalentFlow</p>
-            <h1 class="fw-700 text-glow display-5">KARİYER TAKİP <span class="fw-300">HATTI</span></h1>
+            <h1 class="fw-700 display-5">KARİYER TAKİP <span class="fw-300">HATTI</span></h1>
         </div>
         <div class="col-md-4 text-md-end">
-            <button class="btn btn-neon"> <i class="fas fa-plus me-2"></i> Yeni Başvuru Ekle</button>
+            <button class="btn btn-premium">Yeni Başvuru Ekle</button>
         </div>
     </div>
 
@@ -126,7 +33,7 @@
                 </div>
                 <div class="job-role mb-3">Machine Learning Engineer</div>
                 <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-white-50"><i class="far fa-clock me-1"></i> 3g önce</small>
+                    <small class="text-white-50">3g önce</small>
                     <img src="https://logo.clearbit.com/google.com" class="rounded" width="24" height="24"
                         onerror="this.src='https://ui-avatars.com/api/?name=G&background=4f46e5&color=fff'">
                 </div>
@@ -139,7 +46,7 @@
                 </div>
                 <div class="job-role mb-3">Backend developer</div>
                 <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-white-50"><i class="far fa-clock me-1"></i> 1g önce</small>
+                    <small class="text-white-50">1g önce</small>
                     <img src="https://logo.clearbit.com/trendyol.com" class="rounded" width="24" height="24"
                         onerror="this.src='https://ui-avatars.com/api/?name=T&background=4f46e5&color=fff'">
                 </div>
@@ -160,7 +67,7 @@
                 </div>
                 <div class="job-role mb-3">Backend Developer</div>
                 <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-white-50"><i class="far fa-calendar-check me-1"></i> Yarın 14:00</small>
+                    <small class="text-white-50">Yarın 14:00</small>
                     <img src="https://logo.clearbit.com/trendyol.com" class="rounded" width="24" height="24">
                 </div>
             </div>
@@ -180,7 +87,7 @@
                 </div>
                 <div class="job-role mb-3">Junior Data Scientist</div>
                 <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-white-50"><i class="fas fa-file-signature me-1"></i> Sözleşme Bekliyor</small>
+                    <small class="text-white-50">Sözleşme Bekliyor</small>
                     <img src="https://logo.clearbit.com/hepsiburada.com" class="rounded" width="24" height="24"
                         onerror="this.src='https://ui-avatars.com/api/?name=H&background=22c55e&color=fff'">
                 </div>
@@ -200,7 +107,7 @@
                     <span class="status-badge">Kapandı</span>
                 </div>
                 <div class="job-role mb-3">Fullstack Intern</div>
-                <div class="mt-2 text-danger small"><i class="fas fa-times-circle me-1"></i> Reddedildi</div>
+                <div class="mt-2 text-danger small">Reddedildi</div>
             </div>
         </div>
     </div>

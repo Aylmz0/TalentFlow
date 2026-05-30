@@ -1,87 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<style>
-    body {
-        font-family: 'Poppins', sans-serif;
-        color: #f1f2f3;
-        overflow-x: hidden;
-    }
 
-    .cyber-card {
-        background: rgba(17, 26, 41, 0.75);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 24px;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-        transition: 0.4s;
-    }
-
-    .cyber-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 30px 60px rgba(79, 70, 229, 0.15);
-        border-color: rgba(79, 70, 229, 0.3);
-    }
-
-    .btn-neon {
-        background: linear-gradient(135deg, #4f46e5 0%, #7e22ce 100%);
-        color: white !important;
-        border: none;
-        border-radius: 15px;
-        font-weight: 700;
-        padding: 16px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
-        transition: 0.3s;
-    }
-
-    .btn-neon:hover {
-        box-shadow: 0 0 25px rgba(126, 34, 206, 0.7);
-        transform: scale(1.02);
-    }
-
-    .chart-container {
-        position: relative;
-        height: 550px;
-        width: 100%;
-    }
-
-    .upload-area {
-        border: 2px dashed rgba(160, 174, 192, 0.3);
-        border-radius: 20px;
-        padding: 50px;
-        text-align: center;
-        cursor: pointer;
-        background: rgba(255, 255, 255, 0.02);
-        transition: 0.3s;
-    }
-
-    .upload-area:hover {
-        border-color: #4f46e5;
-        background: rgba(79, 70, 229, 0.05);
-        color: #e2e8f0;
-    }
-
-    .text-glow {
-        text-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
-        color: #e2e8f0;
-    }
-
-    .bg-indigo-subtle {
-        background-color: rgba(79, 70, 229, 0.1) !important;
-        color: #7e22ce !important;
-    }
-</style>
 
 <div class="container-fluid px-5 py-5">
     <div class="row mb-5 align-items-center">
         <div class="col-md-8 text-start">
             <p class="text-primary text-uppercase small ls-3 fw-600 mb-1" style="letter-spacing: 3px;">TalentFlow </p>
-            <h1 class="fw-700 text-glow display-5">YETENEK <span class="fw-300">ANALİZİ</span></h1>
+            <h1 class="fw-700 display-5">YETENEK <span class="fw-300">ANALİZİ</span></h1>
         </div>
         <div class="col-md-4 text-md-end">
-            <span class="badge bg-indigo-subtle p-3 rounded-pill fw-600"> <i class="fas fa-satellite-dish me-2"></i>
+            <span class="badge bg-indigo-subtle p-3 rounded-pill fw-600">
                 canlı analiz</span>
         </div>
     </div>
@@ -91,24 +20,22 @@
             <div class="card cyber-card p-5 h-100 text-start">
                 <div class="d-flex align-items-center mb-4">
                     <div class="bg-indigo-subtle text-light p-3 rounded-3 me-3">
-                        <i class="fas fa-brain fa-2x"></i>
+                        <span class="fw-bold">AI</span>
                     </div>
-                    <h3 class="fw-bold m-0 text-glow">Nöral Tarama</h3>
+                    <h3 class="fw-bold m-0">Nöral Tarama</h3>
                 </div>
                 <p class="mb-5" style="color: #cbd5e0;">Özgeçmişinizi PDF formatında yükleyin. Yapay zeka motorumuz
                     teknik yeteneklerinizi milisaniyeler içinde analiz edip puanlayacaktır.</p>
                 <form method="POST" enctype="multipart/form-data" action="{% url 'accounts:cv_upload' %}" x-data="{ loading: false, fileName: '' }" @submit="if(fileName) { loading = true } else { $event.preventDefault(); }">
                     {% csrf_token %}
                     <div class="upload-area mb-5" onclick="document.getElementById('cvInput').click()">
-                        <i class="fas fa-file-pdf fa-4x text-primary mb-4" x-show="!fileName"></i>
-                        <i class="fas fa-check-circle fa-4x text-success mb-4" x-show="fileName" style="display: none;"></i>
                         <h5 class="fw-bold text-light" x-text="fileName ? fileName : 'CV Dosyasını Sürükleyiniz'">CV Dosyasını Sürükleyiniz</h5>
                         <p class="text-white-50 small" x-show="!fileName">veya buraya tıklayınız</p>
                         <p class="text-success small fw-bold" x-show="fileName" style="display: none;">Dosya seçildi, analize hazır.</p>
                         <input type="file" id="cvInput" name="cv_file" hidden accept=".pdf" @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
                     </div>
-                    <button type="submit" class="btn btn-neon w-100 mt-auto" :disabled="loading || !fileName"> 
-                        <span x-show="!loading"><i class="fas fa-bolt me-2"></i> Analizi Başlat</span>
+                    <button type="submit" class="btn btn-premium w-100 mt-auto" :disabled="loading || !fileName"> 
+                        <span x-show="!loading">Analizi Başlat</span>
                         <span x-show="loading" style="display: none;">
                             <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                             Yapay Zeka Analiz Ediyor...
@@ -120,7 +47,13 @@
 
         <div class="col-xl-8 col-lg-7 text-start">
             <div class="card cyber-card p-5 h-100">
-                <h3 class="fw-bold mb-5 text-glow text-uppercase">YETENEK İZDÜŞÜMÜ (SKILL TREE)</h3>
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <h3 class="fw-bold m-0 text-uppercase">Yetenek İzdüşümü</h3>
+                    <div class="text-end">
+                        <span class="fs-6 text-white-50 d-block">Genel Yetkinlik</span>
+                        <span class="fs-2 fw-bold text-success">85<small class="fs-6">/100</small></span>
+                    </div>
+                </div>
                 <div class="chart-container">
                     <canvas id="skillRadar"></canvas>
                 </div>
@@ -158,6 +91,10 @@
             }]
         },
         options: {
+            animation: {
+                duration: 2000,
+                easing: 'easeOutQuart'
+            },
             scales: {
                 r: {
                     angleLines: { color: 'rgba(160, 174, 192, 0.2)' },

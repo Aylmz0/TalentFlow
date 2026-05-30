@@ -1,27 +1,27 @@
 <nav class="sidebar d-flex flex-column p-3 text-white" style="width: 280px; height: 100vh; position: fixed; top: 0; left: 0;">
     <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-        <span class="fs-4 fw-bold text-primary"><i class="fas fa-brain me-2"></i>TalentFlow</span>
+        <span class="fs-4 fw-bold text-primary">TalentFlow</span>
     </a>
     <hr style="border-color: rgba(255,255,255,0.1);">
     <ul class="nav nav-pills flex-column mb-auto">
         <li class="nav-item">
             <a href="{% url 'dashboard:skill_tree' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'skill_tree' %}active{% endif %}">
-                <i class="fas fa-chart-pie me-2"></i> Yetenek Analizi
+                Yetenek Analizi
             </a>
         </li>
         <li>
             <a href="{% url 'dashboard:kanban' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'kanban' %}active{% endif %}">
-                <i class="fas fa-columns me-2"></i> Kariyer Hattı
+                Kariyer Hattı
             </a>
         </li>
         <li>
             <a href="#" class="nav-link text-white">
-                <i class="fas fa-briefcase me-2"></i> İş İlanları
+                İş İlanları
             </a>
         </li>
         <li>
             <a href="#" class="nav-link text-white">
-                <i class="fas fa-robot me-2"></i> AI Mülakat
+                AI Mülakat
             </a>
         </li>
     </ul>
