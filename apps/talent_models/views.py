@@ -1,7 +1,7 @@
 
 # Create your views here.
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 
 from apps.jobs.models import Job  # Modelin bulunduğu doğru yol
 
@@ -21,7 +21,6 @@ def update_job_status(request, pk):
         # Sayfanın yenilenmesine gerek olmadığı için "İçerik Yok" (204) dönüyoruz
         return HttpResponse(status=204)
 
-from django.shortcuts import render
 
 def skill_tree(request):
     return render(request, 'dashboard/skill_tree.html')
