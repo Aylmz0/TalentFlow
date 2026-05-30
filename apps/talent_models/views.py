@@ -37,6 +37,17 @@ def update_job_status(request, pk):
 
 
 
+def _score_careers(career_paths, user_skills_lower):
+    matches = []
+    for cp in career_paths:
+        matched = [s for s in cp["skills"] if s in user_skills_lower]
+        missing = [s for s in cp["skills"] if s not in user_skills_lower]
+        score = round(len(matched) / len(cp["skills"]) * 100)
+        matches.append({"title": cp["title"], "score": score, "matched": matched, "missing": missing})
+    matches.sort(key=lambda x: x["score"], reverse=True)
+    return matches[:5]
+
+
 def skill_tree(request):
     user_skills = []
     overall_score = 0
@@ -72,9 +83,9 @@ def skill_tree(request):
     raw_levels = json.loads(skill_levels_json)
     raw_cats = json.loads(skill_categories_json)
 
-    zipped = sorted(zip(raw_names, raw_levels), key=lambda x: x[1], reverse=True)
-    strongest_skills = [{"name": n, "level": l} for n, l in zipped[:3]]
-    weakest_skills = [{"name": n, "level": l} for n, l in zipped[-3:]] if len(zipped) >= 3 else [{"name": n, "level": l} for n, l in zipped]
+    zipped = sorted(zip(raw_names, raw_levels, strict=True), key=lambda x: x[1], reverse=True)
+    strongest_skills = [{"name": n, "level": lv} for n, lv in zipped[:3]]
+    weakest_skills = [{"name": n, "level": lv} for n, lv in zipped[-3:]] if len(zipped) >= 3 else [{"name": n, "level": lv} for n, lv in zipped]
 
     cat_count = {}
     for cat in raw_cats:
@@ -88,7 +99,7 @@ def skill_tree(request):
     missing_skills = [s for s in target_skills if s not in user_lower]
     gap_score = round(len(matched_skills) / len(target_skills) * 100) if target_skills else 0
 
-    all_skills_data = [{"name": n, "level": l, "category": c} for n, l, c in zip(raw_names, raw_levels, raw_cats)]
+    all_skills_data = [{"name": n, "level": lv, "category": c} for n, lv, c in zip(raw_names, raw_levels, raw_cats, strict=True)]
 
     career_paths = [
         {"title": "Senior Python Developer", "skills": ["python", "django", "postgresql", "docker", "rest api", "git", "ci/cd"]},
@@ -100,16 +111,18 @@ def skill_tree(request):
         {"title": "Site Reliability Engineer", "skills": ["kubernetes", "docker", "aws", "ci/cd", "linux", "python", "monitoring"]},
         {"title": "Frontend Developer", "skills": ["react", "javascript", "css", "html", "typescript", "git"]},
     ]
-    career_matches = []
-    for cp in career_paths:
-        matched = [s for s in cp["skills"] if s in user_lower]
-        missing = [s for s in cp["skills"] if s not in user_lower]
-        score = round(len(matched) / len(cp["skills"]) * 100)
-        career_matches.append({"title": cp["title"], "score": score, "matched": matched, "missing": missing})
-    career_matches.sort(key=lambda x: x["score"], reverse=True)
-    career_recommendations = career_matches[:5]
+    career_recommendations = _score_careers(career_paths, user_lower)
 
-    return render(request, 'dashboard/skill_tree.html', locals())
+    return render(request, 'dashboard/skill_tree.html', {
+        "user_skills": user_skills, "overall_score": overall_score, "has_skills": has_skills, "is_mock": is_mock,
+        "skill_names_json": skill_names_json, "skill_levels_json": skill_levels_json,
+        "skill_categories_json": skill_categories_json,
+        "strongest_skills": strongest_skills, "weakest_skills": weakest_skills,
+        "gap_score": gap_score, "matched_skills": matched_skills, "missing_skills": missing_skills,
+        "cat_labels_json": cat_labels_json, "cat_values_json": cat_values_json,
+        "all_skills_data": all_skills_data,
+        "career_recommendations": career_recommendations,
+    })
 
 def kanban(request):
     if request.method == "POST":
@@ -444,7 +457,7 @@ JSON formatında ver, markdown kullanma:
 
         raw = ai._execute_completion(prompt, "")
         if raw and "Hata" not in raw:
-            import json, re
+            import json
             clean = raw.strip()
             if "```json" in clean:
                 clean = clean.split("```json")[1].split("```")[0].strip()
@@ -517,7 +530,7 @@ CV METNİ:
 
                     raw = ai._execute_completion(prompt, "")
                     if raw and "Hata" not in raw:
-                        import json, re
+                        import json
                         clean = raw.strip()
                         if "```json" in clean:
                             clean = clean.split("```json")[1].split("```")[0].strip()

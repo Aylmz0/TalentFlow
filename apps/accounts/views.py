@@ -23,7 +23,7 @@ def login_view(request):
 
 
 def register_view(request):
-    User = get_user_model()
+    user_model = get_user_model()
     if request.method == "POST":
         username = request.POST.get('username')
         email = request.POST.get('email')
@@ -33,13 +33,12 @@ def register_view(request):
 
         if password != password_confirm:
             messages.error(request, 'Şifreler eşleşmiyor.')
-        elif User.objects.filter(username=username).exists():
+        elif user_model.objects.filter(username=username).exists():
             messages.error(request, 'Bu kullanıcı adı zaten alınmış.')
-        elif User.objects.filter(email=email).exists():
+        elif user_model.objects.filter(email=email).exists():
             messages.error(request, 'Bu e-posta adresi zaten kayıtlı.')
         else:
-            User = get_user_model()
-            user = User.objects.create_user(  # pyright: ignore
+            user = user_model.objects.create_user(  # pyright: ignore
                 username=username,
                 email=email,
                 password=password,
