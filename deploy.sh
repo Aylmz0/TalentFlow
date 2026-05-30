@@ -31,9 +31,9 @@ python manage.py collectstatic --noinput
 echo "Managing tmux session..."
 if tmux has-session -t talentflow 2>/dev/null; then
   echo "Existing tmux session 'talentflow' found. Restarting..."
-  tmux send-keys -t talentflow:0 C-c Enter
+  tmux send-keys -t talentflow C-c Enter
   sleep 2
-  tmux send-keys -t talentflow:0 ".venv/bin/python manage.py runserver 0.0.0.0:8000" Enter
+  tmux send-keys -t talentflow ".venv/bin/python manage.py runserver 0.0.0.0:8000" Enter
 else
   echo "No active tmux session. Creating new session 'talentflow'..."
   tmux new-session -d -s talentflow ".venv/bin/python manage.py runserver 0.0.0.0:8000"
