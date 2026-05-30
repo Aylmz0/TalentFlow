@@ -65,29 +65,5 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~/TalentFlow
-            
-            if [ ! -d ".venv" ]; then
-              python3 -m venv .venv
-            fi
-            
-            source .venv/bin/activate
-            pip install --upgrade pip
-            pip install -r requirements.txt
-            python manage.py migrate --noinput
-            python manage.py collectstatic --noinput
+            bash ~/TalentFlow/deploy.sh
 
-            # Tmux içinde Django sunucusunu kesintisiz yeniden başlat
-            tmux has-session -t talentflow 2>/dev/null
-            if [ $? -eq 0 ]; then
-              echo "Existing tmux session found. Restarting..."
-              tmux send-keys -t talentflow:0 C-c Enter
-              sleep 2
-              tmux send-keys -t talentflow:0 "source .venv/bin/activate" Enter
-              tmux send-keys -t talentflow:0 "python manage.py runserver 0.0.0.0:8000" Enter
-            else
-              echo "No active tmux session. Creating new session 'talentflow'..."
-              tmux new-session -d -s talentflow "source .venv/bin/activate && python manage.py runserver 0.0.0.0:8000"
-            fi
-            
-            echo "Deployment successfully completed!"
