@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-
-
 <div class="container-fluid px-5 py-5">
     <div class="row mb-5 align-items-center">
         <div class="col-md-8 text-start">
@@ -10,12 +9,12 @@
             <h1 class="fw-700 display-5">YETENEK <span class="fw-300">ANALİZİ</span></h1>
         </div>
         <div class="col-md-4 text-md-end">
-            <span class="badge bg-indigo-subtle p-3 rounded-pill fw-600">
-                canlı analiz</span>
+            <span class="badge bg-indigo-subtle p-3 rounded-pill fw-600">canlı analiz</span>
         </div>
     </div>
 
     <div class="row g-5">
+        <!-- Sol Bölüm: CV Yükleme -->
         <div class="col-xl-4 col-lg-5">
             <div class="card cyber-card p-5 h-100 text-start">
                 <div class="d-flex align-items-center mb-4">
@@ -24,8 +23,8 @@
                     </div>
                     <h3 class="fw-bold m-0">Nöral Tarama</h3>
                 </div>
-                <p class="mb-5" style="color: #cbd5e0;">Özgeçmişinizi PDF formatında yükleyin. Yapay zeka motorumuz
-                    teknik yeteneklerinizi milisaniyeler içinde analiz edip puanlayacaktır.</p>
+                <p class="mb-5" style="color: #cbd5e0;">Özgeçmişinizi PDF formatında yükleyin. Yapay zeka motorumuz teknik yeteneklerinizi saniyeler içinde analiz edip puanlayacaktır.</p>
+                
                 <form method="POST" enctype="multipart/form-data" action="{% url 'accounts:cv_upload' %}" x-data="{ loading: false, fileName: '' }" @submit="if(fileName) { loading = true } else { $event.preventDefault(); }">
                     {% csrf_token %}
                     <div class="upload-area mb-5" onclick="document.getElementById('cvInput').click()">
@@ -45,43 +44,56 @@
             </div>
         </div>
 
+        <!-- Sağ Bölüm: Radar Grafiği ve Liste -->
         <div class="col-xl-8 col-lg-7 text-start">
             <div class="card cyber-card p-5 h-100">
                 <div class="d-flex justify-content-between align-items-center mb-5">
                     <h3 class="fw-bold m-0 text-uppercase">Yetenek İzdüşümü</h3>
                     <div class="text-end">
                         <span class="fs-6 text-white-50 d-block">Genel Yetkinlik</span>
-                        <span class="fs-2 fw-bold text-success">85<small class="fs-6">/100</small></span>
+                        <span class="fs-2 fw-bold text-success">{{ overall_score }}<small class="fs-6">/100</small></span>
                     </div>
                 </div>
-                <div class="chart-container">
+                
+                <div class="chart-container" style="min-height: 350px; position: relative;">
+                    {% if has_skills %}
                     <canvas id="skillRadar"></canvas>
+                    {% else %}
+                    <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center py-5">
+                        <div class="p-4 rounded-circle mb-4 border border-white-10" style="background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
+                            <span class="text-white-50 small fw-bold px-2 py-1">YOK</span>
+                        </div>
+                        <h4 class="fw-600 text-light mb-2">Henüz CV Analiz Edilmedi</h4>
+                        <p class="text-white-50 small max-w-400" style="max-width: 400px; margin: 0 auto;">Sol kısımdaki "Nöral Tarama" modülünden PDF özgeçmişinizi yükleyerek yetenek izdüşümünüzü anında çıkarabilirsiniz.</p>
+                    </div>
+                    {% endif %}
                 </div>
-                <div class="mt-4 p-3 rounded-3"
-                    style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+                
+                {% if has_skills %}
+                <div class="mt-4 p-3 rounded-3" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
                     <p class="small text-info m-0">
-                        <strong class="text-primary">Kritik Not:</strong> Grafikteki alanın hacmi, toplam teknik
-                        yetkinliğinizi gösterir. Alan ne kadar genişse, kurumsal eşleşme oranınız o kadar yüksektir.
+                        <strong class="text-primary">Kritik Not:</strong> Grafikteki alanın hacmi, toplam teknik yetkinliğinizi gösterir. Alan ne kadar genişse, kurumsal eşleşme oranınız o kadar yüksektir.
                     </p>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
+{% if has_skills %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const ctx = document.getElementById('skillRadar');
     new Chart(ctx, {
         type: 'radar',
         data: {
-            labels: ['PYTHON', 'DJANGO', 'SQL PRO', 'FRONTEND', 'DEVOPS', 'A.I./ML'],
+            labels: JSON.parse('{{ skill_names_json|escapejs }}'),
             datasets: [{
                 label: 'Mevcut Yetkinlik',
-                data: [95, 75, 90, 65, 50, 80],
+                data: JSON.parse('{{ skill_levels_json|escapejs }}'),
                 fill: true,
                 backgroundColor: 'rgba(79, 70, 229, 0.25)',
                 borderColor: '#4f46e5',
@@ -109,4 +121,5 @@
         }
     });
 </script>
+{% endif %}
 {% endblock %}
