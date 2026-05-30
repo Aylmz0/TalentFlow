@@ -1,98 +1,93 @@
 // static/js/kanban_logic.js
 
-function kanbanBoard() {
-    return {
-        draggedCard: null,
-
-        handleDragStart(event, cardId) {
-            this.draggedCard = event.target;
-            event.dataTransfer.effectAllowed = 'move';
-            event.dataTransfer.setData('text/plain', cardId);
-            event.target.style.opacity = '0.4';
-        },
-
-        handleDragEnd(event) {
-            event.target.style.opacity = '1';
-        },
-
-        handleDrop(event, columnStatus) {
-            event.preventDefault();
-            const cardId = event.dataTransfer.getData('text/plain');
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. Her bir cards-container için SortableJS'i başlatıyoruz
+    document.querySelectorAll('.cards-container').forEach(container => {
+        new Sortable(container, {
+            group: 'kanban', // Diğer sütunlarla kart paylaşımı için aynı grup ismini veriyoruz
+            animation: 250, // Pürüzsüz yer değiştirme animasyonu hızı (ms)
+            ghostClass: 'kanban-card-ghost', // Taşınırken arkada kalan gölge sınıfı
+            chosenClass: 'kanban-card-chosen', // Sürüklenmek üzere seçilen kart sınıfı
+            dragClass: 'kanban-card-drag', // Sürüklenme esnasındaki kart sınıfı
             
-            // Eğer kart geçerli değilse işlem yapma
-            if (!cardId) return;
-
-            // Django endpoint URL'si (dashboard namespace'inden)
-            const url = `/dashboard/update-status/${cardId}/`;
-            
-            // Django CSRF token'ı sayfadaki hidden inputtan oku
-            const csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
-            const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
-
-            const formData = new FormData();
-            formData.append('status', columnStatus);
-            if (csrfToken) {
-                formData.append('csrfmiddlewaretoken', csrfToken);
-            }
-
-            // Sessizce arka planda veritabanı durumunu güncelle
-            fetch(url, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+            // Kart bir sütundan diğerine taşınıp bırakıldığında tetiklenir
+            onEnd: function (evt) {
+                const cardId = evt.item.getAttribute('data-id');
+                // Bırakılan yeni sütunun durum değerini al
+                const newContainer = evt.to;
+                const columnStatus = newContainer.getAttribute('data-status');
+                
+                if (!cardId || !columnStatus) return;
+                
+                // Arka planda veritabanı durumunu güncellemek için URL
+                const url = `/dashboard/update-status/${cardId}/`;
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+                
+                const formData = new FormData();
+                formData.append('status', columnStatus);
+                if (csrfToken) {
+                    formData.append('csrfmiddlewaretoken', csrfToken);
                 }
-            }).then(response => {
-                if (response.ok) {
-                    // Kartı görsel olarak yeni sütunun container'ına taşıyalım
-                    const card = document.querySelector(`[data-id="${cardId}"]`);
-                    const column = event.currentTarget;
-                    const container = column.querySelector('.cards-container');
-                    
-                    if (card && container) {
-                        // Eğer sütundaki empty-placeholder ("Kart yok") varsa kaldıralım
-                        const emptyPlaceholder = container.querySelector('.empty-placeholder');
-                        if (emptyPlaceholder) {
-                            emptyPlaceholder.remove();
-                        }
-
-                        // Kartı yeni sütuna ekle
-                        container.appendChild(card);
-                        
-                        // Sürüklenen kartın eski sütununu kontrol et ve boş kaldıysa placeholder ekle
-                        this.cleanupEmptyColumns();
-
-                        // Sütunların başlarındaki sayaç sayılarını senkronize et
-                        this.updateColumnCounters();
+                
+                // Sunucuya sessiz güncelleme isteği at
+                fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
-                } else {
-                    console.error('Kart durumu veritabanında güncellenemedi.');
-                }
-            }).catch(error => {
-                console.error('Ağ hatası:', error);
-            });
-        },
+                }).then(response => {
+                    if (response.ok) {
+                        // Sayaçları ve boş sütun durumlarını güncelle
+                        updateColumnCounters();
+                        cleanupEmptyColumns();
+                    } else {
+                        console.error('Kart durumu veritabanında güncellenemedi.');
+                    }
+                }).catch(error => {
+                    console.error('Ağ hatası:', error);
+                });
+            }
+        });
+    });
 
-        cleanupEmptyColumns() {
-            document.querySelectorAll('.cards-container').forEach(container => {
-                const cards = container.querySelectorAll('.job-card');
-                if (cards.length === 0 && !container.querySelector('.empty-placeholder')) {
+    // 2. Boş kalan sütunlar için "Kart yok" uyarısı ekleme/silme fonksiyonu
+    function cleanupEmptyColumns() {
+        document.querySelectorAll('.cards-container').forEach(container => {
+            const cards = container.querySelectorAll('.job-card');
+            const emptyPlaceholder = container.querySelector('.empty-placeholder');
+            
+            if (cards.length === 0) {
+                if (!emptyPlaceholder) {
                     const placeholder = document.createElement('div');
                     placeholder.className = 'text-center py-5 text-white-50 small empty-placeholder';
                     placeholder.textContent = 'Kart yok';
                     container.appendChild(placeholder);
                 }
-            });
-        },
+            } else {
+                if (emptyPlaceholder) {
+                    emptyPlaceholder.remove();
+                }
+            }
+        });
+    }
 
-        updateColumnCounters() {
-            document.querySelectorAll('.kanban-column').forEach(column => {
-                const cardCount = column.querySelectorAll('.job-card').length;
+    // 3. Sütunların başlarındaki sayaç rozetlerini güncelleme fonksiyonu
+    function updateColumnCounters() {
+        document.querySelectorAll('.kanban-column').forEach(column => {
+            const container = column.querySelector('.cards-container');
+            if (container) {
+                // Sütun içindeki gerçek kartların sayısını al (boş uyarıları sayılmaz)
+                const cardCount = container.querySelectorAll('.job-card').length;
                 const badge = column.querySelector('.badge');
                 if (badge) {
                     badge.textContent = cardCount;
                 }
-            });
-        }
+            }
+        });
     }
-}
+
+    // Sayfa ilk yüklendiğinde boş sütunları ve sayaçları bir kere kontrol et
+    cleanupEmptyColumns();
+    updateColumnCounters();
+});

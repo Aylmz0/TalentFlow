@@ -6,31 +6,37 @@
     <ul class="nav nav-pills flex-column mb-auto">
         <li class="nav-item">
             <a href="{% url 'dashboard:skill_tree' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'skill_tree' %}active{% endif %}">
-                Yetenek Analizi
+                <i class="bi bi-activity me-2"></i> Yetenek Analizi
             </a>
         </li>
         <li>
             <a href="{% url 'dashboard:kanban' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'kanban' %}active{% endif %}">
-                Kariyer Hattı
+                <i class="bi bi-columns-gap me-2"></i> Kariyer Hattı
             </a>
         </li>
         <li>
             <a href="{% url 'dashboard:architect' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'architect' %}active{% endif %}">
-                Portfolyo Mimarı
+                <i class="bi bi-boxes me-2"></i> Portfolyo Mimarı
             </a>
         </li>
     </ul>
     <hr style="border-color: rgba(255,255,255,0.1);">
+    {% if request.user.is_authenticated %}
     <div class="dropdown">
         <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="https://ui-avatars.com/api/?name=User&background=4f46e5&color=fff" alt="" width="32" height="32" class="rounded-circle me-2">
-            <strong>Kullanıcı</strong>
+            <img src="https://ui-avatars.com/api/?name={{ request.user.username|default:'User'|urlencode }}&background=c9a55c&color=fff" alt="" width="32" height="32" class="rounded-circle me-2">
+            <strong>{{ request.user.username|default:'Kullanıcı' }}</strong>
         </a>
         <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
             <li><a class="dropdown-item" href="#">Profil</a></li>
-            <li><a class="dropdown-item" href="#">Ayarlar</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Çıkış Yap</a></li>
+            <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Çıkış Yap</a></li>
         </ul>
     </div>
+    {% else %}
+    <div class="d-flex flex-column gap-2">
+        <a href="{% url 'accounts:login' %}" class="btn btn-premium btn-sm w-100"><i class="bi bi-box-arrow-in-right me-1"></i>Giriş Yap</a>
+        <a href="{% url 'accounts:register' %}" class="btn btn-outline-secondary btn-sm w-100"><i class="bi bi-person-plus me-1"></i>Kayıt Ol</a>
+    </div>
+    {% endif %}
 </nav>

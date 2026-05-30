@@ -9,7 +9,7 @@ class Skill(models.Model):
     category = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 class JobSkill(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='required_skills')
@@ -20,7 +20,7 @@ class JobSkill(models.Model):
         unique_together = ('job', 'skill')
 
     def __str__(self):
-        return f"{self.skill.name} for {self.job.title}"
+        return f"{str(self.skill.name)} for {str(self.job.title)}"
 
 class UserSkill(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='skills')
@@ -31,7 +31,7 @@ class UserSkill(models.Model):
         unique_together = ('user', 'skill')
 
     def __str__(self):
-        return f"{self.user.username} - {self.skill.name} (Lvl {self.level})"
+        return f"{self.user} - {self.skill} (Lvl {self.level})"
 
 class Application(models.Model):
     STATUS_CHOICES = [
@@ -51,7 +51,7 @@ class Application(models.Model):
         unique_together = ('user', 'job')
 
     def __str__(self):
-        return f"{self.user.username} applied to {self.job.title}"
+        return f"{self.user} applied to {self.job}"
 
 class UserProject(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='projects')
@@ -61,7 +61,7 @@ class UserProject(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Project Idea by {self.user.username}: {self.idea[:50]}..."
+        return f"Project Idea by {self.user}: {str(self.idea)[:50]}..."
 
 class MockInterview(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mock_interviews')
@@ -72,4 +72,4 @@ class MockInterview(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Mock Interview for {self.user.username} - {self.job.title} (Score: {self.score})"
+        return f"Mock Interview for {self.user} - {self.job} (Score: {self.score})"

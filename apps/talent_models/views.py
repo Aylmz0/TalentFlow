@@ -42,37 +42,96 @@ def skill_tree(request):
     overall_score = 0
     has_skills = False
     is_mock = False
+    skill_names_json = "[]"
+    skill_levels_json = "[]"
+    skill_categories_json = "[]"
 
     if request.user.is_authenticated:
         user_skills = UserSkill.objects.filter(user=request.user).select_related('skill').order_by('-level')
         if user_skills.exists():
             names = [us.skill.name.upper() for us in user_skills]
-            levels = [us.level * 20 for us in user_skills]  # 1-5 seviyeleri → 20-100 aralığına çevrilir
+            levels = [us.level * 20 for us in user_skills]
+            categories = [(us.skill.category or 'Genel') for us in user_skills]
             overall_score = round(sum(levels) / len(levels))
             skill_names_json = json.dumps(names)
             skill_levels_json = json.dumps(levels)
+            skill_categories_json = json.dumps(categories)
             has_skills = True
 
     if not has_skills:
-        # Beautiful fallback premium sample data for a filled radar chart
-        names = ["PYTHON", "DJANGO", "POSTGRESQL", "DOCKER", "KUBERNETES", "REACT"]
-        levels = [90, 85, 80, 75, 60, 70]
+        names = ["PYTHON", "DJANGO", "POSTGRESQL", "DOCKER", "KUBERNETES", "REACT", "AWS", "REDIS", "GIT", "RABBITMQ", "CI/CD"]
+        levels = [90, 85, 80, 75, 60, 70, 55, 65, 88, 40, 50]
+        categories = ["Backend", "Backend", "Database", "DevOps", "DevOps", "Frontend", "Cloud", "Database", "Tools", "Backend", "DevOps"]
         overall_score = 76
         skill_names_json = json.dumps(names)
         skill_levels_json = json.dumps(levels)
+        skill_categories_json = json.dumps(categories)
         is_mock = True
 
-    return render(request, 'dashboard/skill_tree.html', {
-        'user_skills': user_skills,
-        'skill_names_json': skill_names_json,
-        'skill_levels_json': skill_levels_json,
-        'overall_score': overall_score,
-        'has_skills': has_skills,
-        'is_mock': is_mock
-    })
+    raw_names = json.loads(skill_names_json)
+    raw_levels = json.loads(skill_levels_json)
+    raw_cats = json.loads(skill_categories_json)
+
+    zipped = sorted(zip(raw_names, raw_levels), key=lambda x: x[1], reverse=True)
+    strongest_skills = [{"name": n, "level": l} for n, l in zipped[:3]]
+    weakest_skills = [{"name": n, "level": l} for n, l in zipped[-3:]] if len(zipped) >= 3 else [{"name": n, "level": l} for n, l in zipped]
+
+    cat_count = {}
+    for cat in raw_cats:
+        cat_count[cat] = cat_count.get(cat, 0) + 1
+    cat_labels_json = json.dumps(list(cat_count.keys()))
+    cat_values_json = json.dumps(list(cat_count.values()))
+
+    target_skills = ["python", "django", "postgresql", "docker", "kubernetes", "aws", "redis", "react", "git", "rest api", "ci/cd"]
+    user_lower = [s.lower() for s in raw_names]
+    matched_skills = [s for s in target_skills if s in user_lower]
+    missing_skills = [s for s in target_skills if s not in user_lower]
+    gap_score = round(len(matched_skills) / len(target_skills) * 100) if target_skills else 0
+
+    all_skills_data = [{"name": n, "level": l, "category": c} for n, l, c in zip(raw_names, raw_levels, raw_cats)]
+
+    career_paths = [
+        {"title": "Senior Python Developer", "skills": ["python", "django", "postgresql", "docker", "rest api", "git", "ci/cd"]},
+        {"title": "DevOps Engineer", "skills": ["docker", "kubernetes", "aws", "ci/cd", "git", "linux"]},
+        {"title": "Full Stack Developer", "skills": ["python", "django", "react", "postgresql", "git", "docker", "javascript"]},
+        {"title": "Backend Developer (Go)", "skills": ["go", "postgresql", "docker", "rest api", "git", "grpc"]},
+        {"title": "Data Scientist", "skills": ["python", "sql", "pandas", "numpy", "machine learning", "statistics"]},
+        {"title": "Cloud Architect", "skills": ["aws", "docker", "kubernetes", "ci/cd", "python", "networking"]},
+        {"title": "Site Reliability Engineer", "skills": ["kubernetes", "docker", "aws", "ci/cd", "linux", "python", "monitoring"]},
+        {"title": "Frontend Developer", "skills": ["react", "javascript", "css", "html", "typescript", "git"]},
+    ]
+    career_matches = []
+    for cp in career_paths:
+        matched = [s for s in cp["skills"] if s in user_lower]
+        missing = [s for s in cp["skills"] if s not in user_lower]
+        score = round(len(matched) / len(cp["skills"]) * 100)
+        career_matches.append({"title": cp["title"], "score": score, "matched": matched, "missing": missing})
+    career_matches.sort(key=lambda x: x["score"], reverse=True)
+    career_recommendations = career_matches[:5]
+
+    return render(request, 'dashboard/skill_tree.html', locals())
 
 def kanban(request):
-    # Eğer veritabanında hiç iş ilanı yoksa, otomatik olarak seed_jobs çalıştır
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "seed_jobs":
+            from django.core.management import call_command
+            try:
+                call_command('seed_jobs')
+            except Exception as e:
+                print("Kanban seed_jobs hatası:", e)
+        elif action == "create_application":
+            title = request.POST.get("title", "").strip()
+            company = request.POST.get("company", "").strip()
+            description = request.POST.get("description", "").strip()
+            if title and company:
+                Job.objects.create(title=title, company=company, description=description, status="basvuruldu")
+                from django.contrib import messages
+                messages.success(request, f'"{title}" başvurusu eklendi!')
+            else:
+                from django.contrib import messages
+                messages.error(request, 'Başlık ve şirket adı zorunludur.')
+
     if Job.objects.count() == 0:
         from django.core.management import call_command
         try:
@@ -98,32 +157,30 @@ def start_interview(request, job_pk):
 
     job = get_object_or_404(Job, pk=job_pk)
     
-    # Get user skills or job title to query AI coach
+    # AI'den soruları al (arka planda thread'de, önce placeholder göster)
     user_skills = UserSkill.objects.filter(user=user).select_related('skill')
     skill_names = [us.skill.name for us in user_skills]
-    
     if not skill_names:
-        # Fallback to general skills
         skill_names = ["Python", "Django", "SQL", "Git", "Docker"]
-        
-    ai_coach = AICoach()
-    raw_questions = ai_coach.generate_interview_questions(skill_names)
     
-    # Parse questions from AI coach
-    questions = []
-    if raw_questions and "Hata" not in raw_questions and "API anahtarı" not in raw_questions:
-        for raw_line in raw_questions.split('\n'):
-            line = raw_line.strip()
-            match = re.match(r'^\d+[\.\-\s]+(.*)', line)
-            if match:
-                questions.append(match.group(1).strip())
-            elif line and len(line) > 10 and not line.startswith(('Aşağıdaki', 'Teknolojiler', 'Lütfen', 'Sadece')):
-                questions.append(line)
-        questions = questions[:5]
-        
-    if len(questions) < 3:
-        # Use fallback questions if parsing fails or error occurs
-        questions = FALLBACK_QUESTIONS
+    # Soruları SENKRON olarak al (basit ve güvenilir)
+    questions = list(FALLBACK_QUESTIONS)
+    try:
+        ai_coach = AICoach()
+        raw_questions = ai_coach.generate_interview_questions(skill_names)
+        if raw_questions and "Hata" not in raw_questions and "API anahtarı" not in raw_questions:
+            parsed = []
+            for raw_line in raw_questions.split('\n'):
+                line = raw_line.strip()
+                match = re.match(r'^\d+[\.\-\s]+(.*)', line)
+                if match:
+                    parsed.append(match.group(1).strip())
+                elif line and len(line) > 10 and not line.startswith(('Aşağıdaki', 'Teknolojiler', 'Lütfen', 'Sadece')):
+                    parsed.append(line)
+            if len(parsed) >= 3:
+                questions = parsed[:5]
+    except Exception as e:
+        print("AI soru üretme hatası, fallback kullanılıyor:", e)
         
     interview = MockInterview.objects.create(
         user=user,
@@ -138,6 +195,7 @@ def start_interview(request, job_pk):
         'job': job,
         'questions': questions,
         'questions_json': json.dumps(questions),
+        'is_loading': False,
         'is_completed': False
     })
 
@@ -159,7 +217,6 @@ def submit_interview(request, interview_pk):
         parsed = False
         if raw_result and "Hata" not in raw_result:
             try:
-                # Clean up any potential markdown wraps
                 clean_result = raw_result
                 if "```json" in clean_result:
                     clean_result = clean_result.split("```json")[1].split("```")[0].strip()
@@ -175,7 +232,6 @@ def submit_interview(request, interview_pk):
                 print("AI scoring JSON parse failed, falling back.", e)
                 
         if not parsed:
-            # Smart Fallback Scoring System
             score = 0
             for ans in answers:
                 word_count = len(ans.split())
@@ -190,7 +246,6 @@ def submit_interview(request, interview_pk):
             score = min(100, max(20, score))
             feedback = "Mülakatınız başarıyla tamamlandı. Teknik düzeyiniz temel seviyede yeterli olmakla birlikte, cevaplarınızı detaylandırıp daha fazla örnek vermeniz faydalı olacaktır."
             
-        # Standardize per_question format
         qa_breakdown = []
         for i, q in enumerate(interview.questions):
             ans = answers[i] if i < len(answers) else ""
@@ -202,7 +257,6 @@ def submit_interview(request, interview_pk):
                 "comment": pq_data.get('comment', '')
             })
             
-        # Store serialized JSON dict in user_answers
         interview.user_answers = {
             'answers': answers,
             'feedback': feedback,
@@ -220,6 +274,7 @@ def submit_interview(request, interview_pk):
         })
         
     return redirect('dashboard:kanban')
+
 
 
 def _get_architect_fallback(idea: str):
@@ -357,3 +412,63 @@ def architect(request):
         'recommended_stack': recommended_stack,
         'roadmap': roadmap
     })
+
+
+FALLBACK_PROJECTS = [
+    {"title": "Mikroservis Tabanlı E-Ticaret Platformu", "description": "Docker ve Kubernetes ile konteynerize edilmiş, PostgreSQL ve Redis altyapısında çalışan, RESTful API'ler ile haberleşen bir e-ticaret sistemi. CI/CD pipeline ile otomatize edilmiş deployment."},
+    {"title": "Gerçek Zamanlı Sohbet ve Bildirim Servisi", "description": "WebSocket ve message broker (RabbitMQ/Kafka) kullanarak ölçeklenebilir bir sohbet altyapısı. Redis ile oturum yönetimi, Docker Compose ile local geliştirme ortamı."},
+    {"title": "AI Destekli CV ve Yetenek Analiz Platformu", "description": "FastAPI arka uç, React ön yüz ve PostgreSQL veritabanı ile adayların yeteneklerini analiz eden, eksiklerini raporlayan bir recruitment asistanı."},
+    {"title": "Cloud-Native Monitoring ve Alerting Sistemi", "description": "AWS/GCP altyapısında çalışan, Prometheus metrik toplama ve Grafana görselleştirme ile kapsamlı bir monitoring çözümü. Kubernetes üzerinde deploy."},
+]
+
+
+def project_ideas(request):
+    user = request.user
+    if not user.is_authenticated:
+        user = get_user_model().objects.first() or get_user_model().objects.create_user(username="konuk_kullanici", email="guest@talentflow.com")
+
+    user_skills = UserSkill.objects.filter(user=user).select_related('skill').order_by('level')[:3]
+    skill_names = [us.skill.name for us in user_skills]
+    if not skill_names:
+        skill_names = ["Python", "Docker", "Kubernetes"]
+
+    ideas_html = ""
+    try:
+        from core.services.ai_coach import AICoach
+        ai = AICoach()
+        prompt = f"""Kullanıcının yetenekleri: {', '.join(skill_names)}.
+Kullanıcının eksik olduğu yetenekleri geliştirmesi için 2 tane proje fikri ver.
+Her proje için 'title' (kısa, 5-10 kelime) ve 'description' (2-3 cümle, hangi teknolojiler kullanılacak, ne öğrenecek) olacak.
+JSON formatında ver, markdown kullanma:
+{{"projects": [{{"title": "...", "description": "..."}}, {{"title": "...", "description": "..."}}]}}"""
+
+        raw = ai._execute_completion(prompt, "")
+        if raw and "Hata" not in raw:
+            import json, re
+            clean = raw.strip()
+            if "```json" in clean:
+                clean = clean.split("```json")[1].split("```")[0].strip()
+            elif "```" in clean:
+                clean = clean.split("```")[1].split("```")[0].strip()
+            data = json.loads(clean)
+            projects = data.get("projects", [])[:2]
+            for p in projects:
+                ideas_html += f"""
+                <div class="p-3 rounded-3 mb-2" style="background: rgba(201,165,92,0.04); border: 1px solid rgba(201,165,92,0.1);">
+                    <h6 class="fw-bold text-accent small mb-1"><i class="bi bi-rocket-takeoff me-1"></i>{p['title']}</h6>
+                    <p class="small text-white-50 m-0">{p['description']}</p>
+                </div>"""
+    except Exception:
+        pass
+
+    if not ideas_html:
+        import random
+        for p in random.sample(FALLBACK_PROJECTS, 2):
+            ideas_html += f"""
+            <div class="p-3 rounded-3 mb-2" style="background: rgba(201,165,92,0.04); border: 1px solid rgba(201,165,92,0.1);">
+                <h6 class="fw-bold text-accent small mb-1"><i class="bi bi-rocket-takeoff me-1"></i>{p['title']}</h6>
+                <p class="small text-white-50 m-0">{p['description']}</p>
+            </div>"""
+
+    from django.http import HttpResponse
+    return HttpResponse(ideas_html)

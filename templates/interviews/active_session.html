@@ -49,15 +49,14 @@
             <h1 class="fw-700 display-5">MÜLAKAT <span class="fw-300">SİMÜLASYONU</span></h1>
         </div>
         <div class="col-md-4 text-md-end">
-            <a href="{% url 'dashboard:kanban' %}" class="btn btn-premium btn-sm">Kariyer Hattına Dön</a>
+            <a href="{% url 'dashboard:kanban' %}" class="btn btn-premium btn-sm"><i class="bi bi-arrow-left me-1"></i>Kariyer Hattına Dön</a>
         </div>
     </div>
 
+    {% if is_completed %}
     <div class="row justify-content-center">
         <div class="col-xl-9 col-lg-10">
-            <!-- EĞER SONUÇLAR VARSA (Mülakat Tamamlandıysa) -->
-            {% if is_completed %}
-            <div class="card cyber-card p-5 text-start">
+            <div class="card premium-card p-5 text-start">
                 <div class="row align-items-center g-5 mb-5">
                     <div class="col-md-4 d-flex justify-content-center">
                         <div class="circular-progress" style="--progress-val: {{ interview.score }}; --progress-color: {% if interview.score >= 80 %}#10b981{% elif interview.score >= 50 %}#fbbf24{% else %}#ef4444{% endif %};">
@@ -65,7 +64,7 @@
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <span class="badge bg-indigo-subtle px-3 py-2 rounded-pill fw-600 text-uppercase small mb-2" style="letter-spacing: 1px;">Mülakat Tamamlandı</span>
+                        <span class="badge bg-dark text-accent px-3 py-2 rounded-pill fw-600 text-uppercase small mb-2 border border-accent" style="letter-spacing: 1px;"><i class="bi bi-check-circle me-1"></i>Mülakat Tamamlandı</span>
                         <h2 class="fw-bold mb-3">{{ job.title }}</h2>
                         <h5 class="text-white-50 mb-3">{{ job.company }}</h5>
                         <p class="lead fs-6 text-white-50 m-0" style="border-left: 2px solid var(--color-accent); padding-left: 15px;">
@@ -76,7 +75,7 @@
 
                 <hr style="border-color: rgba(255,255,255,0.08); margin-bottom: 2.5rem;">
 
-                <h3 class="fw-bold mb-4">Soru ve Cevap Analizi</h3>
+                <h3 class="fw-bold mb-4"><i class="bi bi-chat-square-text me-2 text-accent"></i>Soru ve Cevap Analizi</h3>
                 
                 <div class="d-flex flex-column gap-4">
                     {% for item in qa_breakdown %}
@@ -102,44 +101,42 @@
                     {% endfor %}
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- EĞER MÜLAKAT DEVAM EDİYORSA (Wizard Arayüzü) -->
-            {% else %}
-            <div class="card cyber-card p-5 text-start" x-data="{ 
+    {% else %}
+    <div class="row justify-content-center">
+        <div class="col-xl-9 col-lg-10">
+            <script id="questionsData" type="application/json">{{ questions_json|safe }}</script>
+            <div class="card premium-card p-5 text-start" x-data="{ 
                 step: 0, 
                 answers: ['', '', '', '', ''], 
                 loading: false,
-                questions: {{ questions_json|safe }},
+                questions: JSON.parse(document.getElementById('questionsData').textContent),
                 submitForm() {
                     this.loading = true;
-                    // Create dynamic inputs and submit form
                     const form = document.getElementById('interviewForm');
                     this.answers.forEach((ans, i) => {
                         const input = document.createElement('input');
                         input.type = 'hidden';
-                        input.name = `answer_${i}`;
+                        input.name = 'answer_' + i;
                         input.value = ans;
                         form.appendChild(input);
                     });
                     form.submit();
                 }
             }">
-                <!-- Dynamic steps container -->
-                
-                <!-- STEP 0: Karşılama Ekranı -->
+                <!-- KARŞILAMA EKRANI -->
                 <div x-show="step === 0" class="text-center py-4">
-                    <div class="p-4 rounded-circle mb-4 border border-white-10 d-inline-block" style="background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="text-accent" viewBox="0 0 16 16">
-                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                            <path d="M10.97 4.97a.235.235 0 0 0-.02-.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
-                        </svg>
+                    <div class="p-4 rounded-circle mb-4 border border-accent d-inline-block" style="background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
+                        <i class="bi bi-patch-check text-accent fs-1"></i>
                     </div>
                     <h3 class="fw-bold mb-3">{{ job.title }}</h3>
                     <h5 class="text-white-50 mb-4">{{ job.company }}</h5>
                     
                     <div class="row justify-content-center text-start mb-5">
                         <div class="col-md-8 p-4 rounded-3" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255,255,255,0.05);">
-                            <h6 class="fw-bold text-accent mb-3">Mülakat Kuralları:</h6>
+                            <h6 class="fw-bold text-accent mb-3"><i class="bi bi-info-circle me-1"></i>Mülakat Kuralları:</h6>
                             <ul class="small text-white-50 m-0 d-flex flex-column gap-2">
                                 <li>Bu simülasyon, pozisyonun gereksinimlerine göre hazırlanan <strong>5 teknik sorudan</strong> oluşmaktadır.</li>
                                 <li>Her soru için kapsamlı, teknik terimler içeren ve örnekler barındıran cevaplar vermeniz puanınızı artırır.</li>
@@ -148,76 +145,38 @@
                             </ul>
                         </div>
                     </div>
-                    <button class="btn btn-premium px-5 py-3" @click="step = 1">Mülakatı Başlat</button>
+                    <button class="btn btn-premium px-5 py-3" @click="step = 1"><i class="bi bi-play-fill me-1"></i>Mülakatı Başlat</button>
                 </div>
 
-                <!-- STEP 1 - 5: Sorular -->
-                <div x-show="step >= 1 && step <= 5" class="d-flex flex-column h-100">
+                <!-- SORU EKRANI (step 1-5) -->
+                <div x-show="step >= 1 && step <= 5">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <span class="badge bg-indigo-subtle px-3 py-2 rounded-pill fw-600 text-uppercase small" style="letter-spacing: 1px;" x-text="`Soru ${step} / 5`"></span>
+                        <span class="badge bg-dark text-accent px-3 py-2 rounded-pill fw-600 text-uppercase small border border-accent" style="letter-spacing: 1px;" x-text="'Soru ' + step + ' / 5'"></span>
                         <span class="text-white-50 small">TalentFlow AI Simülasyonu</span>
                     </div>
-
-                    <!-- Soru 1 -->
-                    <div x-show="step === 1" class="d-flex flex-column">
-                        <h4 class="fw-600 text-white mb-4 fs-3">{{ questions.0 }}</h4>
-                        <div class="mb-4">
-                            <label class="form-label text-white-50 small mb-2">Yanıtınız:</label>
-                            <textarea class="form-control bg-dark border-secondary text-white font-monospace p-4" rows="8" placeholder="Teknik detayları ve kavramları kullanarak detaylı bir cevap yazınız..." x-model="answers[0]" style="border-radius: 12px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;"></textarea>
-                        </div>
+                    <h4 class="fw-600 text-white mb-4 fs-3" x-text="questions[step - 1]"></h4>
+                    <div class="mb-4">
+                        <label class="form-label text-white-50 small mb-2">Yanıtınız:</label>
+                        <textarea class="form-control bg-dark border-secondary text-white font-monospace p-4" rows="8" placeholder="Teknik detayları ve kavramları kullanarak detaylı bir cevap yazınız..." x-model="answers[step - 1]" style="border-radius: 12px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;"></textarea>
                     </div>
-
-                    <!-- Soru 2 -->
-                    <div x-show="step === 2" class="d-flex flex-column">
-                        <h4 class="fw-600 text-white mb-4 fs-3">{{ questions.1 }}</h4>
-                        <div class="mb-4">
-                            <label class="form-label text-white-50 small mb-2">Yanıtınız:</label>
-                            <textarea class="form-control bg-dark border-secondary text-white font-monospace p-4" rows="8" placeholder="Teknik detayları ve kavramları kullanarak detaylı bir cevap yazınız..." x-model="answers[1]" style="border-radius: 12px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Soru 3 -->
-                    <div x-show="step === 3" class="d-flex flex-column">
-                        <h4 class="fw-600 text-white mb-4 fs-3">{{ questions.2 }}</h4>
-                        <div class="mb-4">
-                            <label class="form-label text-white-50 small mb-2">Yanıtınız:</label>
-                            <textarea class="form-control bg-dark border-secondary text-white font-monospace p-4" rows="8" placeholder="Teknik detayları ve kavramları kullanarak detaylı bir cevap yazınız..." x-model="answers[2]" style="border-radius: 12px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Soru 4 -->
-                    <div x-show="step === 4" class="d-flex flex-column">
-                        <h4 class="fw-600 text-white mb-4 fs-3">{{ questions.3 }}</h4>
-                        <div class="mb-4">
-                            <label class="form-label text-white-50 small mb-2">Yanıtınız:</label>
-                            <textarea class="form-control bg-dark border-secondary text-white font-monospace p-4" rows="8" placeholder="Teknik detayları ve kavramları kullanarak detaylı bir cevap yazınız..." x-model="answers[3]" style="border-radius: 12px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Soru 5 -->
-                    <div x-show="step === 5" class="d-flex flex-column">
-                        <h4 class="fw-600 text-white mb-4 fs-3">{{ questions.4 }}</h4>
-                        <div class="mb-4">
-                            <label class="form-label text-white-50 small mb-2">Yanıtınız:</label>
-                            <textarea class="form-control bg-dark border-secondary text-white font-monospace p-4" rows="8" placeholder="Teknik detayları ve kavramları kullanarak detaylı bir cevap yazınız..." x-model="answers[4]" style="border-radius: 12px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mt-auto">
-                        <button class="btn btn-outline-secondary px-4" @click="step--" :disabled="step === 1">Önceki Soru</button>
-                        <button class="btn btn-premium px-4" @click="step++">Sonraki Soru</button>
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <button class="btn btn-outline-secondary px-4" @click="step--" :disabled="step === 1"><i class="bi bi-chevron-left me-1"></i>Önceki Soru</button>
+                        <button class="btn btn-premium px-4" @click="step < 5 ? step++ : step = 6">
+                            <span x-show="step < 5">Sonraki Soru <i class="bi bi-chevron-right ms-1"></i></span>
+                            <span x-show="step === 5">Gözden Geçir <i class="bi bi-eye ms-1"></i></span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- STEP 6: Değerlendirme & Gönderme -->
+                <!-- GÖZDEN GEÇİR (step 6) -->
                 <div x-show="step === 6">
-                    <h3 class="fw-bold mb-4">Mülakatı Gözden Geçir</h3>
+                    <h3 class="fw-bold mb-4"><i class="bi bi-eye me-2 text-accent"></i>Mülakatı Gözden Geçir</h3>
                     <p class="text-white-50 mb-5">Lütfen cevaplarınızı göndermeden önce son kez kontrol edin. İsterseniz geri dönüp düzeltebilirsiniz.</p>
                     
                     <div class="d-flex flex-column gap-4 mb-5">
                         <template x-for="(q, i) in questions" :key="i">
                             <div class="p-4 rounded-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03);">
-                                <h5 class="fw-bold text-accent mb-2" x-text="`Soru ${i+1}`"></h5>
+                                <h5 class="fw-bold text-accent mb-2" x-text="'Soru ' + (i + 1)"></h5>
                                 <p class="fw-600 text-white mb-3" x-text="q"></p>
                                 <div class="p-3 rounded-2" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.02);">
                                     <span class="small text-white-50 d-block mb-1">Cevabınız:</span>
@@ -232,9 +191,9 @@
                     </form>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <button class="btn btn-outline-secondary" @click="step = 5" :disabled="loading">Düzenlemek İçin Geri Dön</button>
-                        <button class="btn btn-success px-4 py-3 fw-bold d-flex align-items-center" @click="submitForm()" :disabled="loading">
-                            <span x-show="!loading">Mülakatı Bitir ve Puanla</span>
+                        <button class="btn btn-outline-secondary" @click="step = 5" :disabled="loading"><i class="bi bi-pencil me-1"></i>Düzenlemek İçin Geri Dön</button>
+                        <button class="btn btn-premium px-4 py-3 fw-bold d-flex align-items-center" @click="submitForm()" :disabled="loading">
+                            <span x-show="!loading"><i class="bi bi-send-fill me-2"></i>Mülakatı Bitir ve Puanla</span>
                             <span x-show="loading" class="d-flex align-items-center">
                                 <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                                 Yapay Zeka Cevaplarınızı Analiz Ediyor...
@@ -243,8 +202,8 @@
                     </div>
                 </div>
             </div>
-            {% endif %}
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

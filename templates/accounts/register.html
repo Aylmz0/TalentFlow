@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kayıt Ol | TalentFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-wrapper { min-height: 80vh; display: flex; align-items: center; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-5 py-5 auth-wrapper">
+    <div class="row justify-content-center w-100">
+        <div class="col-xl-5 col-lg-6 col-md-8">
+            <div class="card premium-card p-5 text-start">
+                <div class="text-center mb-5">
+                    <div class="p-3 rounded-circle border border-accent d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px; background: rgba(201,165,92,0.1);">
+                        <i class="bi bi-person-plus text-accent fs-3"></i>
+                    </div>
+                    <h3 class="fw-bold">Hesap Oluştur</h3>
+                    <p class="text-white-50 small">Kariyer yolculuğuna başlamak için kaydol.</p>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label text-white-50 small fw-600">Kullanıcı Adı</label>
+                        <input type="text" name="username" class="form-control bg-dark border-secondary text-white p-3" required style="border-radius: 10px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white-50 small fw-600">E-posta</label>
+                        <input type="email" name="email" class="form-control bg-dark border-secondary text-white p-3" required style="border-radius: 10px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white-50 small fw-600">Hedef Pozisyon</label>
+                        <input type="text" name="target_role" class="form-control bg-dark border-secondary text-white p-3" placeholder="örn. Senior Python Developer" style="border-radius: 10px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white-50 small fw-600">Şifre</label>
+                        <input type="password" name="password" class="form-control bg-dark border-secondary text-white p-3" required style="border-radius: 10px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-white-50 small fw-600">Şifre (Tekrar)</label>
+                        <input type="password" name="password_confirm" class="form-control bg-dark border-secondary text-white p-3" required style="border-radius: 10px; background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important;">
+                    </div>
+                    <button type="submit" class="btn btn-premium w-100 py-3 fw-bold">Kayıt Ol</button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <span class="text-white-50 small">Zaten hesabın var mı?</span>
+                    <a href="{% url 'accounts:login' %}" class="text-accent text-decoration-none small fw-600 ms-1">Giriş Yap</a>
+                </div>
+
+                <div class="mt-4 pt-3 text-center" style="border-top: 1px solid rgba(255,255,255,0.05);">
+                    <a href="{% url 'dashboard:skill_tree' %}" class="text-white-50 text-decoration-none small"><i class="bi bi-arrow-left me-1"></i>Ana Sayfaya Dön</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

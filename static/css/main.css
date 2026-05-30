@@ -1,23 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
-
 :root {
-    /* Luxury Dark / Premium SaaS Palette */
     --color-bg: #0a0a0a;
     --color-surface: rgba(255, 255, 255, 0.03);
     --color-primary: #e2e8f0;
-    --color-accent: #c9a55c; /* Elegant Gold */
+    --color-accent: #c9a55c;
     --color-text: #ededed;
     --color-muted: #a1a1aa;
-    
-    /* 8-Point Grid Spacing */
-    --space-1: 0.25rem; /* 4px */
-    --space-2: 0.5rem;  /* 8px */
-    --space-3: 0.75rem; /* 12px */
-    --space-4: 1rem;    /* 16px */
-    --space-6: 1.5rem;  /* 24px */
-    --space-8: 2rem;    /* 32px */
-    
-    /* Shadows & Glassmorphism */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
     --shadow-depth: 0 10px 30px rgba(0, 0, 0, 0.5);
     --rim-light: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 1px 0 0 rgba(255, 255, 255, 0.03);
 }
@@ -35,11 +28,9 @@ body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    /* Noise Texture for material depth */
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
 }
 
-/* Typography Mastery */
 h1, h2, h3, h4, h5, h6 {
     letter-spacing: -0.02em;
     font-weight: 600;
@@ -49,7 +40,6 @@ h1, h2, h3, h4, h5, h6 {
 .text-accent { color: var(--color-accent) !important; }
 .text-muted { color: var(--color-muted) !important; }
 
-/* The Glassmorphism (Crystal Method) */
 .glass-panel {
     background: var(--color-surface);
     backdrop-filter: blur(16px);
@@ -59,7 +49,6 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 16px;
 }
 
-/* Premium Buttons (Replacing btn-neon) */
 .btn-premium {
     background: rgba(255, 255, 255, 0.05);
     color: var(--color-text);
@@ -84,7 +73,6 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--color-text) !important;
 }
 
-/* Layout & Animations */
 .main-wrapper {
     display: flex;
     min-height: 100vh;
@@ -108,7 +96,6 @@ h1, h2, h3, h4, h5, h6 {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Sidebar Specifics */
 .sidebar {
     position: fixed;
     width: 280px;
@@ -136,7 +123,21 @@ h1, h2, h3, h4, h5, h6 {
     .sidebar-container { display: none !important; }
 }
 
-/* Cards */
+.premium-card {
+    background: var(--color-surface);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 20px;
+    box-shadow: var(--shadow-depth), var(--rim-light);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), var(--rim-light);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
 .cyber-card {
     background: var(--color-surface);
     backdrop-filter: blur(12px);
@@ -152,10 +153,9 @@ h1, h2, h3, h4, h5, h6 {
     border-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Skill Tree Specifics */
 .chart-container {
     position: relative;
-    height: 550px;
+    min-height: clamp(300px, 50vh, 550px);
     width: 100%;
 }
 
@@ -174,7 +174,6 @@ h1, h2, h3, h4, h5, h6 {
     background: rgba(255, 255, 255, 0.03);
 }
 
-/* Kanban Specifics */
 .kanban-wrapper {
     display: flex;
     gap: var(--space-6);
@@ -256,4 +255,117 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--color-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+}
+
+.border-accent {
+    border-color: var(--color-accent) !important;
+}
+
+.toast-container {
+    z-index: 1060 !important;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.skeleton-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: var(--space-4);
+    margin-bottom: var(--space-3);
+    height: 100px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite ease-in-out;
+}
+
+.skeleton-card-sm {
+    height: 70px;
+}
+
+.progress-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(15px);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-panel {
+    max-width: 500px;
+    width: 90%;
+    padding: var(--space-8);
+    border-radius: 24px;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.progress-bar-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: var(--space-6);
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: var(--color-accent);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(201, 165, 92, 0.3);
+}
+
+.progress-phase {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    color: var(--color-muted);
+    transition: all 0.3s ease;
+}
+
+.progress-phase.active {
+    color: var(--color-text);
+}
+
+.progress-phase.done {
+    color: var(--color-accent);
+}
+
+.progress-phase-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.progress-phase.active .progress-phase-icon {
+    border: 2px solid var(--color-accent);
+    animation: pulse 1.5s infinite;
+}
+
+.progress-phase.done .progress-phase-icon {
+    background: var(--color-accent);
+    color: #0a0a0a;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(201, 165, 92, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(201, 165, 92, 0); }
 }
