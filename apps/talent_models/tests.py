@@ -17,7 +17,7 @@ class KanbanDBTest(TestCase):
 
     def test_status_update_works(self):
         # 1. Adım: views.py'da tanımladığımız adresi (URL) oluştur
-        url = reverse('dashboard:update_job_status', args=[self.job.id])
+        url = reverse('dashboard:update_job_status', args=[self.job.id])  # type: ignore[attr-defined]
         
         # 2. Adım: HTMX'in atacağı POST isteğini simüle et
         response = self.client.post(url, {'status': 'mulakat'})

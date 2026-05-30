@@ -14,7 +14,7 @@ env = environ.Env(
 environ.Env.read_env(BASE_DIR / '.env')
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY', default='django-insecure-oy*wepl@w61yw7mm3s%j#j)b=tdzr^*k-ewuqjj4bc(n6md-!8')
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-oy*wepl@w61yw7mm3s%j#j)b=tdzr^*k-ewuqjj4bc(n6md-!8')  # type: ignore
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
@@ -47,6 +47,10 @@ INSTALLED_APPS = [
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
+
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'dashboard:skill_tree'
+LOGOUT_REDIRECT_URL = 'accounts:login'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -81,7 +85,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # Eğer DATABASE_URL environment'ta varsa PostgreSQL/MySQL kullanır, yoksa SQLite fallback çalışır
 DATABASES = {
-    'default': env.db(default='sqlite:///db.sqlite3')
+    'default': env.db(default='sqlite:///db.sqlite3')  # type: ignore
 }
 
 # Password validation
@@ -114,7 +118,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # 🔑 AI & API KEYS (Loaded via django-environ securely)
-OPENROUTER_API_KEY = env('OPENROUTER_API_KEY', default='')
-SERPAPI_API_KEY = env('SERPAPI_API_KEY', default='')
-AI_MODEL = env('AI_MODEL', default='google/gemini-flash-1.5')
+OPENROUTER_API_KEY = env('OPENROUTER_API_KEY', default='')  # type: ignore
+SERPAPI_API_KEY = env('SERPAPI_API_KEY', default='')  # type: ignore
+AI_MODEL = env('AI_MODEL', default='google/gemini-flash-1.5')  # type: ignore
 AI_BASE_URL = 'https://openrouter.ai/api/v1'

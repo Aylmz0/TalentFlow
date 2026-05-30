@@ -77,13 +77,14 @@ class AICoach:
                 "database": {{"primary": "...", "foss_alternative": "..."}},
                 "devops": {{"primary": "...", "foss_alternative": "..."}}
             }},
-            "roadmap": [
-                "1. Adım: ...",
-                "2. Adım: ...",
-                "3. Adım: ...",
-                "4. Adım: ...",
-                "5. Adım: ..."
-            ]
+            "roadmap": {{
+                "directory_structure": "root-directory/\\n├── ...",
+                "technical_decisions": [
+                    "...",
+                    "...",
+                    "..."
+                ]
+            }}
         }}
         
         JSON şemasının geçerli ve parse edilebilir olmasına son derece dikkat et. JSON haricinde hiçbir açıklama veya ek metin ekleme.
@@ -121,7 +122,7 @@ class AICoach:
         """
         return self._execute_completion(prompt, "Puanlama yapılamadı.")
 
-    def _execute_completion(self, prompt, error_message):
+    def _execute_completion(self, prompt, error_message) -> str:
         """
         LiteLLM completion çağrısını güvenli bir şekilde yürüten yardımcı metot.
         """
@@ -143,19 +144,20 @@ class AICoach:
             )
 
             # LiteLLM Pydantic nesnesi olarak döndüğü için nesne niteliği üzerinden okuyoruz
-            if hasattr(response, 'choices') and len(response.choices) > 0:
-                content = response.choices[0].message.content
+            if hasattr(response, 'choices') and len(response.choices) > 0:  # type: ignore[arg-type]
+                content = response.choices[0].message.content  # type: ignore[index]
             # Sözlük fallback
             elif isinstance(response, dict) and 'choices' in response:
                 content = response['choices'][0]['message']['content']
             else:
                 return error_message
 
-            # LLM bazen çıktıya markdown json kod blokları ekleyebilir (```json ... ```). Bunları temizleyelim.
-            if content:
-                content = re.sub(r"^```json\s*", "", content, flags=re.MULTILINE)
-                content = re.sub(r"^```\s*", "", content, flags=re.MULTILINE)
-                content = content.strip()
+            if not content:
+                return error_message
+
+            content = re.sub(r"^```json\s*", "", content, flags=re.MULTILINE)
+            content = re.sub(r"^```\s*", "", content, flags=re.MULTILINE)
+            content = content.strip()
 
             return content
 

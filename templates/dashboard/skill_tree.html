@@ -5,21 +5,21 @@
 <div class="container-fluid px-5 py-5">
     <div class="row mb-5 align-items-center">
         <div class="col-md-8 text-start">
-            <p class="text-primary text-uppercase small ls-3 fw-600 mb-1" style="letter-spacing: 3px;">TalentFlow </p>
+            <p class="text-primary text-uppercase small ls-3 fw-600 mb-1" style="letter-spacing: 3px;">TalentFlow</p>
             <h1 class="fw-700 display-5">YETENEK <span class="fw-300">ANALİZİ</span></h1>
         </div>
         <div class="col-md-4 text-md-end">
-            <span class="badge bg-indigo-subtle p-3 rounded-pill fw-600">canlı analiz</span>
+            <span class="badge bg-dark p-3 rounded-pill fw-600 border border-accent"><i class="bi bi-cpu me-1 text-accent"></i> canlı analiz</span>
         </div>
     </div>
 
-    <div class="row g-5">
-        <!-- Sol Bölüm: CV Yükleme -->
+    <!-- ROW 1: CV Upload (left) + Chart (right) -->
+    <div class="row g-5 mb-5">
         <div class="col-xl-4 col-lg-5">
-            <div class="card cyber-card p-5 h-100 text-start">
+            <div class="card premium-card p-5 text-start">
                 <div class="d-flex align-items-center mb-4">
                     <div class="bg-indigo-subtle text-light p-3 rounded-3 me-3">
-                        <span class="fw-bold">AI</span>
+                        <i class="bi bi-cpu fs-4 text-accent"></i>
                     </div>
                     <h3 class="fw-bold m-0">Nöral Tarama</h3>
                 </div>
@@ -28,13 +28,14 @@
                 <form method="POST" enctype="multipart/form-data" action="{% url 'accounts:cv_upload' %}" x-data="{ loading: false, fileName: '' }" @submit="if(fileName) { loading = true } else { $event.preventDefault(); }">
                     {% csrf_token %}
                     <div class="upload-area mb-5" onclick="document.getElementById('cvInput').click()">
+                        <i class="bi bi-cloud-arrow-up fs-1 text-accent mb-3 d-block"></i>
                         <h5 class="fw-bold text-light" x-text="fileName ? fileName : 'CV Dosyasını Sürükleyiniz'">CV Dosyasını Sürükleyiniz</h5>
                         <p class="text-white-50 small" x-show="!fileName">veya buraya tıklayınız</p>
-                        <p class="text-success small fw-bold" x-show="fileName" style="display: none;">Dosya seçildi, analize hazır.</p>
+                        <p class="text-success small fw-bold" x-show="fileName" style="display: none;"><i class="bi bi-check-circle me-1"></i>Dosya seçildi, analize hazır.</p>
                         <input type="file" id="cvInput" name="cv_file" hidden accept=".pdf" @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
                     </div>
                     <button type="submit" class="btn btn-premium w-100 mt-auto" :disabled="loading || !fileName"> 
-                        <span x-show="!loading">Analizi Başlat</span>
+                        <span x-show="!loading"><i class="bi bi-search me-1"></i>Analizi Başlat</span>
                         <span x-show="loading" style="display: none;">
                             <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                             Yapay Zeka Analiz Ediyor...
@@ -44,82 +45,273 @@
             </div>
         </div>
 
-        <!-- Sağ Bölüm: Radar Grafiği ve Liste -->
-        <div class="col-xl-8 col-lg-7 text-start">
-            <div class="card cyber-card p-5 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-5">
-                    <h3 class="fw-bold m-0 text-uppercase">Yetenek İzdüşümü</h3>
+        <div class="col-xl-8 col-lg-7">
+            {% if not has_skills and not is_mock %}
+            <div class="card premium-card p-5">
+                <div class="d-flex flex-column align-items-center justify-content-center text-center py-5">
+                    <div class="p-4 rounded-circle mb-4 border border-white-10" style="background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
+                        <i class="bi bi-slash-circle text-white-50 fs-1"></i>
+                    </div>
+                    <h4 class="fw-600 text-light mb-2">Henüz CV Analiz Edilmedi</h4>
+                    <p class="text-white-50 small" style="max-width: 400px; margin: 0 auto;">Sol kısımdaki "Nöral Tarama" modülünden PDF özgeçmişinizi yükleyerek yetenek izdüşümünüzü anında çıkarabilirsiniz.</p>
+                </div>
+            </div>
+            {% else %}
+            <div class="card premium-card p-5" x-data="{ chartIndex: 0 }">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-bold m-0 text-uppercase"><i class="bi bi-crosshair me-2 text-accent"></i>Yetenek İzdüşümü</h3>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-white-50 small pe-2 border-end" style="border-color: rgba(255,255,255,0.1) !important;" x-text="['RADAR', 'BAR', 'KATEGORİ'][chartIndex]"></span>
+                        <button class="btn btn-sm btn-outline-secondary rounded-circle p-1" @click="chartIndex = chartIndex > 0 ? chartIndex - 1 : 2" style="width: 32px; height: 32px;"><i class="bi bi-chevron-left"></i></button>
+                        <button class="btn btn-sm btn-outline-secondary rounded-circle p-1" @click="chartIndex = chartIndex < 2 ? chartIndex + 1 : 0" style="width: 32px; height: 32px;"><i class="bi bi-chevron-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex gap-2">
+                        <span class="badge rounded-pill px-3 py-2 border fw-500" :class="chartIndex === 0 ? 'border-accent text-accent' : 'border-secondary text-white-50'" style="cursor: pointer; background: transparent;" @click="chartIndex = 0">Radar</span>
+                        <span class="badge rounded-pill px-3 py-2 border fw-500" :class="chartIndex === 1 ? 'border-accent text-accent' : 'border-secondary text-white-50'" style="cursor: pointer; background: transparent;" @click="chartIndex = 1">Bar</span>
+                        <span class="badge rounded-pill px-3 py-2 border fw-500" :class="chartIndex === 2 ? 'border-accent text-accent' : 'border-secondary text-white-50'" style="cursor: pointer; background: transparent;" @click="chartIndex = 2">Kategori</span>
+                    </div>
                     <div class="text-end">
                         <span class="fs-6 text-white-50 d-block">Genel Yetkinlik</span>
-                        <span class="fs-2 fw-bold text-success">{{ overall_score }}<small class="fs-6">/100</small></span>
+                        <span class="fs-2 fw-bold text-accent">{{ overall_score }}<small class="fs-6 text-white-50">/100</small></span>
                     </div>
                 </div>
-                
-                <div class="chart-container" style="min-height: 350px; position: relative;">
-                    {% if has_skills %}
-                    <canvas id="skillRadar"></canvas>
-                    {% else %}
-                    <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center py-5">
-                        <div class="p-4 rounded-circle mb-4 border border-white-10" style="background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
-                            <span class="text-white-50 small fw-bold px-2 py-1">YOK</span>
-                        </div>
-                        <h4 class="fw-600 text-light mb-2">Henüz CV Analiz Edilmedi</h4>
-                        <p class="text-white-50 small max-w-400" style="max-width: 400px; margin: 0 auto;">Sol kısımdaki "Nöral Tarama" modülünden PDF özgeçmişinizi yükleyerek yetenek izdüşümünüzü anında çıkarabilirsiniz.</p>
-                    </div>
-                    {% endif %}
+
+                <div class="position-relative" style="min-height: 380px;">
+                    <canvas id="chartRadar" class="chart-slide" :class="chartIndex === 0 ? 'active' : ''"></canvas>
+                    <canvas id="chartBar" class="chart-slide" :class="chartIndex === 1 ? 'active' : ''"></canvas>
+                    <canvas id="chartDoughnut" class="chart-slide" :class="chartIndex === 2 ? 'active' : ''"></canvas>
                 </div>
-                
-                {% if has_skills %}
-                <div class="mt-4 p-3 rounded-3" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
-                    <p class="small text-info m-0">
-                        <strong class="text-primary">Kritik Not:</strong> Grafikteki alanın hacmi, toplam teknik yetkinliğinizi gösterir. Alan ne kadar genişse, kurumsal eşleşme oranınız o kadar yüksektir.
-                    </p>
-                </div>
-                {% endif %}
             </div>
+            {% endif %}
         </div>
     </div>
+
+    <!-- ROW 2: Analysis content (full width below) -->
+    {% if has_skills or is_mock %}
+    <div class="row g-5">
+
+        <!-- LEFT COLUMN: Strongest/Weakest + Senior Match + Kategori -->
+        <div class="col-xl-4 col-lg-5 d-flex flex-column gap-5">
+            <div class="card premium-card p-5 text-start">
+                <div class="row g-4">
+                    <div class="col-lg-6 col-xl-12">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-lightning-fill text-accent me-2"></i>En Güçlü Yanlar</h5>
+                        <div class="d-flex flex-column gap-2">
+                            {% for s in strongest_skills %}
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.12);">
+                                <span class="fw-bold fs-5 text-accent" style="min-width: 24px;">{{ forloop.counter }}.</span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="fw-600 text-white small">{{ s.name|capfirst }}</span>
+                                        <span class="text-accent small fw-bold">{{ s.level }}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 5px; background: rgba(255,255,255,0.06); border-radius: 10px;">
+                                        <div class="progress-bar bg-accent" role="progressbar" style="width: {{ s.level }}%; border-radius: 10px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-xl-12">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-arrow-up-circle text-warning me-2"></i>Geliştirilmesi Gerekenler</h5>
+                        <div class="d-flex flex-column gap-2">
+                            {% for s in weakest_skills %}
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.12);">
+                                <span class="fw-bold fs-5 text-warning" style="min-width: 24px;">{{ forloop.counter }}.</span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="fw-600 text-white small">{{ s.name|capfirst }}</span>
+                                        <span class="text-warning small fw-bold">{{ s.level }}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 5px; background: rgba(255,255,255,0.06); border-radius: 10px;">
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ s.level }}%; border-radius: 10px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4" style="border-color: rgba(255,255,255,0.06);">
+
+                <div class="row g-4">
+                    <div class="col-12">
+                        <h6 class="fw-bold mb-3 small text-accent text-uppercase" style="letter-spacing: 1px;"><i class="bi bi-shield-check me-1"></i>Senior Developer Eşleşmesi</h6>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="text-center flex-shrink-0 p-3 rounded-3" style="background: rgba(201,165,92,0.1); border: 1px solid rgba(201,165,92,0.2); min-width: 72px;">
+                                <div class="fs-2 fw-bold text-accent lh-1">{{ gap_score }}<small class="fs-6 text-white-50 ms-1">%</small></div>
+                            </div>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for s in matched_skills %}
+                                <span class="badge px-2 py-1 rounded-pill fw-500" style="background: rgba(16,185,129,0.15); color: #34d399; font-size: 10px;">{{ s|capfirst }}</span>
+                                {% endfor %}
+                                {% for s in missing_skills %}
+                                <span class="badge px-2 py-1 rounded-pill fw-500" style="background: rgba(245,158,11,0.12); color: #fbbf24; font-size: 10px;">{{ s|capfirst }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <h6 class="fw-bold mb-3 small text-accent text-uppercase" style="letter-spacing: 1px;"><i class="bi bi-pie-chart me-1"></i>Kategori Dağılımı</h6>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for cat_label, cat_cnt in cat_count.items %}
+                            <span class="badge px-2 py-1 rounded-pill fw-500" style="background: rgba(201,165,92,0.08); color: #c9a55c; border: 1px solid rgba(201,165,92,0.15); font-size: 10px;">
+                                {{ cat_label }} <span class="text-white-50 ms-1">x{{ cat_cnt }}</span>
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Career + Projects + Skill Grid -->
+        <div class="col-xl-8 col-lg-7 d-flex flex-column gap-5">
+            <div class="card premium-card p-5 text-start">
+                <h5 class="fw-bold mb-3"><i class="bi bi-compass text-accent me-2"></i>Sana Uygun Pozisyonlar</h5>
+                <div class="d-flex flex-column gap-2">
+                    {% for cp in career_recommendations %}
+                    <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);">
+                        <span class="badge rounded-pill px-2 py-1 fw-bold flex-shrink-0" style="font-size: 11px; background: {% if cp.score >= 70 %}rgba(16,185,129,0.2){% elif cp.score >= 40 %}rgba(201,165,92,0.2){% else %}rgba(245,158,11,0.2){% endif %}; color: {% if cp.score >= 70 %}#34d399{% elif cp.score >= 40 %}#c9a55c{% else %}#fbbf24{% endif %};">{{ cp.score }}%</span>
+                        <span class="fw-600 text-white small flex-grow-1">{{ cp.title }}</span>
+                        <span class="d-flex flex-wrap gap-1">
+                            {% for s in cp.matched|slice:':3' %}
+                            <span class="badge px-1 py-0 rounded-pill fw-500" style="background: rgba(16,185,129,0.12); color: #34d399; font-size: 8px;">{{ s }}</span>
+                            {% endfor %}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card premium-card p-5 text-start">
+                <h5 class="fw-bold mb-3"><i class="bi bi-lightbulb text-accent me-2"></i>Kendini Geliştirmek İçin Proje Fikirleri</h5>
+                <button class="btn btn-premium w-100 py-3" hx-get="{% url 'dashboard:project_ideas' %}" hx-target="#project-results" hx-swap="innerHTML">
+                    <span class="htmx-request-hide"><i class="bi bi-stars me-2"></i>Yapay Zeka ile Proje Fikirleri Oluştur</span>
+                    <span class="htmx-request-show" style="display:none;"><span class="spinner-border spinner-border-sm me-2"></span>Proje fikirleri üretiliyor...</span>
+                </button>
+                <div id="project-results" class="mt-3"></div>
+            </div>
+
+            <div class="card premium-card p-5 text-start">
+                <h5 class="fw-bold mb-4"><i class="bi bi-list-columns text-accent me-2"></i>Tüm Yetenekler</h5>
+                <div class="d-flex flex-column gap-2">
+                    {% for s in all_skills_data %}
+                    <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-2" style="background: rgba(255,255,255,0.01);">
+                        <span class="small text-white-50 text-uppercase fw-600" style="min-width: 80px;">{{ s.category|default:'Genel' }}</span>
+                        <span class="text-white small fw-500" style="min-width: 120px;">{{ s.name|capfirst }}</span>
+                        <div class="flex-grow-1">
+                            <div class="progress" style="height: 5px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                                <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ s.level }}%; background: {% if s.level >= 80 %}#10b981{% elif s.level >= 50 %}#c9a55c{% else %}#f59e0b{% endif %};"></div>
+                            </div>
+                        </div>
+                        <span class="small text-white-50 fw-600" style="min-width: 50px; text-align: right;">{{ s.level }}%</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
 
 {% block extra_js %}
-{% if has_skills %}
+{% if has_skills or is_mock %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('skillRadar');
-    new Chart(ctx, {
-        type: 'radar',
-        data: {
-            labels: JSON.parse('{{ skill_names_json|escapejs }}'),
-            datasets: [{
-                label: 'Mevcut Yetkinlik',
-                data: JSON.parse('{{ skill_levels_json|escapejs }}'),
-                fill: true,
-                backgroundColor: 'rgba(79, 70, 229, 0.25)',
-                borderColor: '#4f46e5',
-                borderWidth: 4,
-                pointBackgroundColor: '#fff',
-                pointRadius: 6
-            }]
-        },
+var skillNames = JSON.parse('{{ skill_names_json|escapejs }}');
+var skillLevels = JSON.parse('{{ skill_levels_json|escapejs }}');
+var skillCats = JSON.parse('{{ skill_categories_json|escapejs }}');
+var catLabels = JSON.parse('{{ cat_labels_json|escapejs }}');
+var catValues = JSON.parse('{{ cat_values_json|escapejs }}');
+
+function makeChart(id, type, data) {
+    var cfg = {
+        type: type,
+        data: data,
         options: {
-            animation: {
-                duration: 2000,
-                easing: 'easeOutQuart'
-            },
-            scales: {
-                r: {
-                    angleLines: { color: 'rgba(160, 174, 192, 0.2)' },
-                    grid: { color: 'rgba(160, 174, 192, 0.1)' },
-                    pointLabels: { color: '#a0aec0', font: { size: 14, weight: '600' } },
-                    ticks: { display: false },
-                    suggestMin: 0, suggestMax: 100
-                }
-            },
+            responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } }
+            plugins: { legend: { labels: { color: '#a0aec0', font: { size: 11 } } } }
         }
+    };
+    if (type === 'radar') {
+        cfg.options.scales = {
+            r: {
+                angleLines: { color: 'rgba(160, 174, 192, 0.2)' },
+                grid: { color: 'rgba(160, 174, 192, 0.1)' },
+                pointLabels: { color: '#a0aec0', font: { size: 13, weight: '600' } },
+                ticks: { display: false },
+                suggestMin: 0, suggestMax: 100
+            }
+        };
+        cfg.options.animation = { duration: 2000, easing: 'easeOutQuart' };
+    }
+    if (type === 'bar') {
+        cfg.options.indexAxis = 'y';
+        cfg.options.scales = {
+            x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#a0aec0' } },
+            y: { grid: { display: false }, ticks: { color: '#a0aec0', font: { size: 11, weight: '600' } } }
+        };
+        cfg.options.plugins.legend.display = false;
+    }
+    if (type === 'doughnut') {
+        cfg.options.cutout = '55%';
+    }
+    return new Chart(document.getElementById(id), cfg);
+}
+
+window.addEventListener('load', function() {
+    makeChart('chartRadar', 'radar', {
+        labels: skillNames,
+        datasets: [{
+            label: 'Mevcut Yetkinlik',
+            data: skillLevels,
+            fill: true,
+            backgroundColor: 'rgba(201, 165, 92, 0.25)',
+            borderColor: '#c9a55c',
+            borderWidth: 4,
+            pointBackgroundColor: '#fff',
+            pointRadius: 6
+        }]
     });
+
+    var sorted = skillNames.map(function(n, i) { return { n: n, l: skillLevels[i] }; }).sort(function(a,b) { return b.l - a.l; });
+
+    makeChart('chartBar', 'bar', {
+        labels: sorted.map(function(s) { return s.n; }),
+        datasets: [{
+            label: 'Seviye',
+            data: sorted.map(function(s) { return s.l; }),
+            backgroundColor: sorted.map(function(s) {
+                return s.l >= 80 ? 'rgba(16,185,129,0.7)' : s.l >= 50 ? 'rgba(201,165,92,0.7)' : 'rgba(245,158,11,0.7)';
+            }),
+            borderColor: sorted.map(function(s) {
+                return s.l >= 80 ? '#10b981' : s.l >= 50 ? '#c9a55c' : '#f59e0b';
+            }),
+            borderWidth: 1,
+            borderRadius: 4
+        }]
+    });
+
+    var colors = ['#c9a55c', '#10b981', '#f59e0b', '#60a5fa', '#a78bfa', '#f472b6', '#34d399', '#fbbf24'];
+
+    makeChart('chartDoughnut', 'doughnut', {
+        labels: catLabels,
+        datasets: [{
+            data: catValues,
+            backgroundColor: catLabels.map(function(_,i) { return colors[i % colors.length]; }),
+            borderWidth: 0
+        }]
+    });
+});
 </script>
 {% endif %}
 {% endblock %}
