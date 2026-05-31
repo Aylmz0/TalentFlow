@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="container-fluid px-5 py-5">
+<div class="container-fluid px-5 py-5" id="page-container" x-data="{ loading: false, fileName: '' }">
     <div class="row mb-5 align-items-center">
         <div class="col-md-8 text-start">
             <p class="text-primary text-uppercase small ls-3 fw-600 mb-1" style="letter-spacing: 3px;">TalentFlow</p>
@@ -25,7 +25,7 @@
                 </div>
                 <p class="mb-5" style="color: #cbd5e0;">Özgeçmişinizi PDF formatında yükleyin. Yapay zeka motorumuz teknik yeteneklerinizi saniyeler içinde analiz edip puanlayacaktır.</p>
                 
-                <form method="POST" enctype="multipart/form-data" action="{% url 'accounts:cv_upload' %}" x-data="{ loading: false, fileName: '' }" @submit="if(fileName) { loading = true } else { $event.preventDefault(); }">
+                <form hx-post="{% url 'accounts:cv_upload' %}" hx-target="#page-container" hx-swap="outerHTML" hx-select="#page-container" hx-encoding="multipart/form-data" @submit="if(fileName) { loading = true } else { $event.preventDefault(); }">
                     {% csrf_token %}
                     <div class="upload-area mb-5" onclick="document.getElementById('cvInput').click()">
                         <i class="bi bi-cloud-arrow-up fs-1 text-accent mb-3 d-block"></i>
@@ -46,18 +46,58 @@
         </div>
 
         <div class="col-xl-8 col-lg-7">
-            {% if not has_skills and not is_mock %}
-            <div class="card premium-card p-5">
-                <div class="d-flex flex-column align-items-center justify-content-center text-center py-5">
-                    <div class="p-4 rounded-circle mb-4 border border-white-10" style="background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
-                        <i class="bi bi-slash-circle text-white-50 fs-1"></i>
+            <!-- Loading skeleton -->
+            <div x-show="loading" x-cloak>
+                <div class="card premium-card p-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="fw-bold m-0 text-uppercase"><i class="bi bi-crosshair me-2 text-accent"></i>Yetenek İzdüşümü</h3>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="skeleton-box-sm d-inline-block" style="width: 50px; height: 14px;"></span>
+                            <span class="skeleton-circle d-inline-block" style="width: 32px; height: 32px;"></span>
+                            <span class="skeleton-circle d-inline-block" style="width: 32px; height: 32px;"></span>
+                        </div>
                     </div>
-                    <h4 class="fw-600 text-light mb-2">Henüz CV Analiz Edilmedi</h4>
-                    <p class="text-white-50 small" style="max-width: 400px; margin: 0 auto;">Sol kısımdaki "Nöral Tarama" modülünden PDF özgeçmişinizi yükleyerek yetenek izdüşümünüzü anında çıkarabilirsiniz.</p>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex gap-2">
+                            <span class="skeleton-box d-inline-block" style="width: 60px; height: 30px;"></span>
+                            <span class="skeleton-box d-inline-block" style="width: 50px; height: 30px;"></span>
+                            <span class="skeleton-box d-inline-block" style="width: 70px; height: 30px;"></span>
+                        </div>
+                        <div class="text-end">
+                            <span class="skeleton-box-sm d-block mb-1" style="width: 80px; height: 12px;"></span>
+                            <span class="skeleton-box d-inline-block" style="width: 90px; height: 36px;"></span>
+                        </div>
+                    </div>
+                    <div class="skeleton-box" style="min-height: 380px; width: 100%;"></div>
                 </div>
             </div>
-            {% else %}
-            <div class="card premium-card p-5" x-data="{ chartIndex: 0 }">
+            <!-- Real or fallback content -->
+            <div x-show="!loading" x-cloak>
+                {% if not has_skills and not is_mock %}
+                <div class="card premium-card p-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="fw-bold m-0 text-uppercase"><i class="bi bi-crosshair me-2 text-accent"></i>Yetenek İzdüşümü</h3>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="skeleton-box-sm d-inline-block" style="width: 50px; height: 14px;"></span>
+                            <span class="skeleton-circle d-inline-block" style="width: 32px; height: 32px;"></span>
+                            <span class="skeleton-circle d-inline-block" style="width: 32px; height: 32px;"></span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex gap-2">
+                            <span class="skeleton-box d-inline-block" style="width: 60px; height: 30px;"></span>
+                            <span class="skeleton-box d-inline-block" style="width: 50px; height: 30px;"></span>
+                            <span class="skeleton-box d-inline-block" style="width: 70px; height: 30px;"></span>
+                        </div>
+                        <div class="text-end">
+                            <span class="skeleton-box-sm d-block mb-1" style="width: 80px; height: 12px;"></span>
+                            <span class="skeleton-box d-inline-block" style="width: 90px; height: 36px;"></span>
+                        </div>
+                    </div>
+                    <div class="skeleton-box" style="min-height: 380px; width: 100%;"></div>
+                </div>
+                {% else %}
+                <div class="card premium-card p-5" x-data="{ chartIndex: 0 }" x-effect="renderChart(chartIndex)">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3 class="fw-bold m-0 text-uppercase"><i class="bi bi-crosshair me-2 text-accent"></i>Yetenek İzdüşümü</h3>
                     <div class="d-flex align-items-center gap-2">
@@ -80,16 +120,213 @@
                 </div>
 
                 <div class="position-relative" style="min-height: 380px;">
-                    <canvas id="chartRadar" class="chart-slide" :class="chartIndex === 0 ? 'active' : ''"></canvas>
-                    <canvas id="chartBar" class="chart-slide" :class="chartIndex === 1 ? 'active' : ''"></canvas>
-                    <canvas id="chartDoughnut" class="chart-slide" :class="chartIndex === 2 ? 'active' : ''"></canvas>
+                    <div x-show="chartIndex === 0" style="position: absolute; inset: 0;">
+                        <canvas id="chartRadar" style="width:100%;height:100%;"></canvas>
+                    </div>
+                    <div x-show="chartIndex === 1" style="position: absolute; inset: 0;">
+                        <canvas id="chartBar" style="width:100%;height:100%;"></canvas>
+                    </div>
+                    <div x-show="chartIndex === 2" style="position: absolute; inset: 0;">
+                        <canvas id="chartDoughnut" style="width:100%;height:100%;"></canvas>
+                    </div>
                 </div>
             </div>
             {% endif %}
+            </div><!-- end !loading -->
         </div>
     </div>
 
     <!-- ROW 2: Analysis content (full width below) -->
+    <!-- Loading skeleton row 2 -->
+    <div x-show="loading" x-cloak>
+    <div class="row g-5">
+
+        <!-- LEFT COLUMN skeleton -->
+        <div class="col-xl-4 col-lg-5 d-flex flex-column gap-5">
+            <div class="card premium-card p-5 text-start">
+                <div class="row g-4">
+                    <div class="col-lg-6 col-xl-12">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-lightning-fill text-accent me-2"></i>En Güçlü Yanlar</h5>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: rgba(16,185,129,0.03); border: 1px solid rgba(16,185,129,0.06);">
+                                <span class="skeleton-box d-inline-block" style="width: 24px; height: 24px;"></span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 80px; height: 12px;"></span>
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 12px;"></span>
+                                    </div>
+                                    <div class="skeleton-bar" style="width: 80%;"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: rgba(16,185,129,0.03); border: 1px solid rgba(16,185,129,0.06);">
+                                <span class="skeleton-box d-inline-block" style="width: 24px; height: 24px;"></span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 100px; height: 12px;"></span>
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 12px;"></span>
+                                    </div>
+                                    <div class="skeleton-bar" style="width: 65%;"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: rgba(16,185,129,0.03); border: 1px solid rgba(16,185,129,0.06);">
+                                <span class="skeleton-box d-inline-block" style="width: 24px; height: 24px;"></span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 70px; height: 12px;"></span>
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 12px;"></span>
+                                    </div>
+                                    <div class="skeleton-bar" style="width: 90%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-xl-12">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-arrow-up-circle text-warning me-2"></i>Geliştirilmesi Gerekenler</h5>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: rgba(245,158,11,0.03); border: 1px solid rgba(245,158,11,0.06);">
+                                <span class="skeleton-box d-inline-block" style="width: 24px; height: 24px;"></span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 90px; height: 12px;"></span>
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 12px;"></span>
+                                    </div>
+                                    <div class="skeleton-bar" style="width: 40%;"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: rgba(245,158,11,0.03); border: 1px solid rgba(245,158,11,0.06);">
+                                <span class="skeleton-box d-inline-block" style="width: 24px; height: 24px;"></span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 60px; height: 12px;"></span>
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 12px;"></span>
+                                    </div>
+                                    <div class="skeleton-bar" style="width: 30%;"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: rgba(245,158,11,0.03); border: 1px solid rgba(245,158,11,0.06);">
+                                <span class="skeleton-box d-inline-block" style="width: 24px; height: 24px;"></span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 110px; height: 12px;"></span>
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 12px;"></span>
+                                    </div>
+                                    <div class="skeleton-bar" style="width: 25%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4" style="border-color: rgba(255,255,255,0.06);">
+
+                <div class="row g-4">
+                    <div class="col-12">
+                        <h6 class="fw-bold mb-3 small text-accent text-uppercase" style="letter-spacing: 1px;"><i class="bi bi-shield-check me-1"></i>Senior Developer Eşleşmesi</h6>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="skeleton-circle" style="width: 72px; height: 72px;"></div>
+                            <div class="d-flex flex-wrap gap-1">
+                                <span class="skeleton-box-sm d-inline-block" style="width: 60px; height: 20px;"></span>
+                                <span class="skeleton-box-sm d-inline-block" style="width: 45px; height: 20px;"></span>
+                                <span class="skeleton-box-sm d-inline-block" style="width: 70px; height: 20px;"></span>
+                                <span class="skeleton-box-sm d-inline-block" style="width: 50px; height: 20px;"></span>
+                                <span class="skeleton-box-sm d-inline-block" style="width: 55px; height: 20px;"></span>
+                                <span class="skeleton-box-sm d-inline-block" style="width: 65px; height: 20px;"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <h6 class="fw-bold mb-3 small text-accent text-uppercase" style="letter-spacing: 1px;"><i class="bi bi-pie-chart me-1"></i>Kategori Dağılımı</h6>
+                        <div class="d-flex flex-wrap gap-1">
+                            <span class="skeleton-box-sm d-inline-block" style="width: 80px; height: 22px;"></span>
+                            <span class="skeleton-box-sm d-inline-block" style="width: 90px; height: 22px;"></span>
+                            <span class="skeleton-box-sm d-inline-block" style="width: 65px; height: 22px;"></span>
+                            <span class="skeleton-box-sm d-inline-block" style="width: 100px; height: 22px;"></span>
+                            <span class="skeleton-box-sm d-inline-block" style="width: 75px; height: 22px;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN skeleton -->
+        <div class="col-xl-8 col-lg-7 d-flex flex-column gap-5">
+            <div class="card premium-card p-5 text-start">
+                <h5 class="fw-bold mb-3"><i class="bi bi-compass text-accent me-2"></i>Sana Uygun Pozisyonlar</h5>
+                <div class="d-flex flex-column gap-2">
+                    <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 20px;"></span>
+                        <span class="skeleton-box-sm flex-grow-1 d-inline-block" style="width: 180px; height: 14px;"></span>
+                        <span class="d-flex gap-1"><span class="skeleton-box-sm d-inline-block" style="width: 30px; height: 16px;"></span><span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 16px;"></span></span>
+                    </div>
+                    <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 20px;"></span>
+                        <span class="skeleton-box-sm flex-grow-1 d-inline-block" style="width: 140px; height: 14px;"></span>
+                        <span class="d-flex gap-1"><span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 16px;"></span><span class="skeleton-box-sm d-inline-block" style="width: 45px; height: 16px;"></span></span>
+                    </div>
+                    <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 20px;"></span>
+                        <span class="skeleton-box-sm flex-grow-1 d-inline-block" style="width: 200px; height: 14px;"></span>
+                        <span class="d-flex gap-1"><span class="skeleton-box-sm d-inline-block" style="width: 50px; height: 16px;"></span><span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 16px;"></span></span>
+                    </div>
+                    <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 20px;"></span>
+                        <span class="skeleton-box-sm flex-grow-1 d-inline-block" style="width: 160px; height: 14px;"></span>
+                        <span class="d-flex gap-1"><span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 16px;"></span><span class="skeleton-box-sm d-inline-block" style="width: 30px; height: 16px;"></span></span>
+                    </div>
+                    <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 20px;"></span>
+                        <span class="skeleton-box-sm flex-grow-1 d-inline-block" style="width: 120px; height: 14px;"></span>
+                        <span class="d-flex gap-1"><span class="skeleton-box-sm d-inline-block" style="width: 45px; height: 16px;"></span><span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 16px;"></span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card premium-card p-5 text-start">
+                <h5 class="fw-bold mb-3"><i class="bi bi-lightbulb text-accent me-2"></i>Kendini Geliştirmek İçin Proje Fikirleri</h5>
+                <span class="skeleton-box d-inline-block w-100" style="height: 48px;"></span>
+            </div>
+
+            <div class="card premium-card p-5 text-start">
+                <h5 class="fw-bold mb-4"><i class="bi bi-list-columns text-accent me-2"></i>Tüm Yetenekler</h5>
+                <div class="d-flex flex-column gap-2">
+                    <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-2" style="background: rgba(255,255,255,0.01);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 80px; height: 12px;"></span>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 120px; height: 12px;"></span>
+                        <div class="flex-grow-1"><div class="skeleton-bar" style="width: 85%;"></div></div>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 12px;"></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-2" style="background: rgba(255,255,255,0.01);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 80px; height: 12px;"></span>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 100px; height: 12px;"></span>
+                        <div class="flex-grow-1"><div class="skeleton-bar" style="width: 70%;"></div></div>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 12px;"></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-2" style="background: rgba(255,255,255,0.01);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 80px; height: 12px;"></span>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 85px; height: 12px;"></span>
+                        <div class="flex-grow-1"><div class="skeleton-bar" style="width: 60%;"></div></div>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 12px;"></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-2" style="background: rgba(255,255,255,0.01);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 80px; height: 12px;"></span>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 140px; height: 12px;"></span>
+                        <div class="flex-grow-1"><div class="skeleton-bar" style="width: 95%;"></div></div>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 12px;"></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-2" style="background: rgba(255,255,255,0.01);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 80px; height: 12px;"></span>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 110px; height: 12px;"></span>
+                        <div class="flex-grow-1"><div class="skeleton-bar" style="width: 50%;"></div></div>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 12px;"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+    <!-- Real or fallback row 2 -->
+    <div x-show="!loading" x-cloak>
     {% if has_skills or is_mock %}
     <div class="row g-5">
 
@@ -218,100 +455,272 @@
         </div>
 
     </div>
-    {% endif %}
-</div>
-{% endblock %}
+    {% else %}
+    <!-- SKELETON ROW 2 -->
+    <div class="row g-5">
 
-{% block extra_js %}
-{% if has_skills or is_mock %}
+        <!-- LEFT COLUMN skeleton -->
+        <div class="col-xl-4 col-lg-5 d-flex flex-column gap-5">
+            <div class="card premium-card p-5 text-start">
+                <div class="row g-4">
+                    <div class="col-lg-6 col-xl-12">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-lightning-fill text-accent me-2"></i>En Güçlü Yanlar</h5>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: rgba(16,185,129,0.03); border: 1px solid rgba(16,185,129,0.06);">
+                                <span class="skeleton-box d-inline-block" style="width: 24px; height: 24px;"></span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 80px; height: 12px;"></span>
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 12px;"></span>
+                                    </div>
+                                    <div class="skeleton-bar" style="width: 80%;"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: rgba(16,185,129,0.03); border: 1px solid rgba(16,185,129,0.06);">
+                                <span class="skeleton-box d-inline-block" style="width: 24px; height: 24px;"></span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 100px; height: 12px;"></span>
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 12px;"></span>
+                                    </div>
+                                    <div class="skeleton-bar" style="width: 65%;"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: rgba(16,185,129,0.03); border: 1px solid rgba(16,185,129,0.06);">
+                                <span class="skeleton-box d-inline-block" style="width: 24px; height: 24px;"></span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 70px; height: 12px;"></span>
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 12px;"></span>
+                                    </div>
+                                    <div class="skeleton-bar" style="width: 90%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-xl-12">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-arrow-up-circle text-warning me-2"></i>Geliştirilmesi Gerekenler</h5>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: rgba(245,158,11,0.03); border: 1px solid rgba(245,158,11,0.06);">
+                                <span class="skeleton-box d-inline-block" style="width: 24px; height: 24px;"></span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 90px; height: 12px;"></span>
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 12px;"></span>
+                                    </div>
+                                    <div class="skeleton-bar" style="width: 40%;"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: rgba(245,158,11,0.03); border: 1px solid rgba(245,158,11,0.06);">
+                                <span class="skeleton-box d-inline-block" style="width: 24px; height: 24px;"></span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 60px; height: 12px;"></span>
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 12px;"></span>
+                                    </div>
+                                    <div class="skeleton-bar" style="width: 30%;"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: rgba(245,158,11,0.03); border: 1px solid rgba(245,158,11,0.06);">
+                                <span class="skeleton-box d-inline-block" style="width: 24px; height: 24px;"></span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 110px; height: 12px;"></span>
+                                        <span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 12px;"></span>
+                                    </div>
+                                    <div class="skeleton-bar" style="width: 25%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4" style="border-color: rgba(255,255,255,0.06);">
+
+                <div class="row g-4">
+                    <div class="col-12">
+                        <h6 class="fw-bold mb-3 small text-accent text-uppercase" style="letter-spacing: 1px;"><i class="bi bi-shield-check me-1"></i>Senior Developer Eşleşmesi</h6>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="skeleton-circle" style="width: 72px; height: 72px;"></div>
+                            <div class="d-flex flex-wrap gap-1">
+                                <span class="skeleton-box-sm d-inline-block" style="width: 60px; height: 20px;"></span>
+                                <span class="skeleton-box-sm d-inline-block" style="width: 45px; height: 20px;"></span>
+                                <span class="skeleton-box-sm d-inline-block" style="width: 70px; height: 20px;"></span>
+                                <span class="skeleton-box-sm d-inline-block" style="width: 50px; height: 20px;"></span>
+                                <span class="skeleton-box-sm d-inline-block" style="width: 55px; height: 20px;"></span>
+                                <span class="skeleton-box-sm d-inline-block" style="width: 65px; height: 20px;"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <h6 class="fw-bold mb-3 small text-accent text-uppercase" style="letter-spacing: 1px;"><i class="bi bi-pie-chart me-1"></i>Kategori Dağılımı</h6>
+                        <div class="d-flex flex-wrap gap-1">
+                            <span class="skeleton-box-sm d-inline-block" style="width: 80px; height: 22px;"></span>
+                            <span class="skeleton-box-sm d-inline-block" style="width: 90px; height: 22px;"></span>
+                            <span class="skeleton-box-sm d-inline-block" style="width: 65px; height: 22px;"></span>
+                            <span class="skeleton-box-sm d-inline-block" style="width: 100px; height: 22px;"></span>
+                            <span class="skeleton-box-sm d-inline-block" style="width: 75px; height: 22px;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN skeleton -->
+        <div class="col-xl-8 col-lg-7 d-flex flex-column gap-5">
+            <div class="card premium-card p-5 text-start">
+                <h5 class="fw-bold mb-3"><i class="bi bi-compass text-accent me-2"></i>Sana Uygun Pozisyonlar</h5>
+                <div class="d-flex flex-column gap-2">
+                    <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 20px;"></span>
+                        <span class="skeleton-box-sm flex-grow-1 d-inline-block" style="width: 180px; height: 14px;"></span>
+                        <span class="d-flex gap-1"><span class="skeleton-box-sm d-inline-block" style="width: 30px; height: 16px;"></span><span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 16px;"></span></span>
+                    </div>
+                    <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 20px;"></span>
+                        <span class="skeleton-box-sm flex-grow-1 d-inline-block" style="width: 140px; height: 14px;"></span>
+                        <span class="d-flex gap-1"><span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 16px;"></span><span class="skeleton-box-sm d-inline-block" style="width: 45px; height: 16px;"></span></span>
+                    </div>
+                    <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 20px;"></span>
+                        <span class="skeleton-box-sm flex-grow-1 d-inline-block" style="width: 200px; height: 14px;"></span>
+                        <span class="d-flex gap-1"><span class="skeleton-box-sm d-inline-block" style="width: 50px; height: 16px;"></span><span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 16px;"></span></span>
+                    </div>
+                    <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 20px;"></span>
+                        <span class="skeleton-box-sm flex-grow-1 d-inline-block" style="width: 160px; height: 14px;"></span>
+                        <span class="d-flex gap-1"><span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 16px;"></span><span class="skeleton-box-sm d-inline-block" style="width: 30px; height: 16px;"></span></span>
+                    </div>
+                    <div class="p-3 rounded-3 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 20px;"></span>
+                        <span class="skeleton-box-sm flex-grow-1 d-inline-block" style="width: 120px; height: 14px;"></span>
+                        <span class="d-flex gap-1"><span class="skeleton-box-sm d-inline-block" style="width: 45px; height: 16px;"></span><span class="skeleton-box-sm d-inline-block" style="width: 35px; height: 16px;"></span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card premium-card p-5 text-start">
+                <h5 class="fw-bold mb-3"><i class="bi bi-lightbulb text-accent me-2"></i>Kendini Geliştirmek İçin Proje Fikirleri</h5>
+                <span class="skeleton-box d-inline-block w-100" style="height: 48px;"></span>
+            </div>
+
+            <div class="card premium-card p-5 text-start">
+                <h5 class="fw-bold mb-4"><i class="bi bi-list-columns text-accent me-2"></i>Tüm Yetenekler</h5>
+                <div class="d-flex flex-column gap-2">
+                    <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-2" style="background: rgba(255,255,255,0.01);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 80px; height: 12px;"></span>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 120px; height: 12px;"></span>
+                        <div class="flex-grow-1"><div class="skeleton-bar" style="width: 85%;"></div></div>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 12px;"></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-2" style="background: rgba(255,255,255,0.01);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 80px; height: 12px;"></span>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 100px; height: 12px;"></span>
+                        <div class="flex-grow-1"><div class="skeleton-bar" style="width: 70%;"></div></div>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 12px;"></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-2" style="background: rgba(255,255,255,0.01);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 80px; height: 12px;"></span>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 85px; height: 12px;"></span>
+                        <div class="flex-grow-1"><div class="skeleton-bar" style="width: 60%;"></div></div>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 12px;"></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-2" style="background: rgba(255,255,255,0.01);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 80px; height: 12px;"></span>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 140px; height: 12px;"></span>
+                        <div class="flex-grow-1"><div class="skeleton-bar" style="width: 95%;"></div></div>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 12px;"></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-2" style="background: rgba(255,255,255,0.01);">
+                        <span class="skeleton-box-sm d-inline-block" style="width: 80px; height: 12px;"></span>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 110px; height: 12px;"></span>
+                        <div class="flex-grow-1"><div class="skeleton-bar" style="width: 50%;"></div></div>
+                        <span class="skeleton-box-sm d-inline-block" style="width: 40px; height: 12px;"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    {% endif %}
+    {% if has_skills or is_mock %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-var skillNames = JSON.parse('{{ skill_names_json|escapejs }}');
-var skillLevels = JSON.parse('{{ skill_levels_json|escapejs }}');
-var skillCats = JSON.parse('{{ skill_categories_json|escapejs }}');
-var catLabels = JSON.parse('{{ cat_labels_json|escapejs }}');
-var catValues = JSON.parse('{{ cat_values_json|escapejs }}');
+var _chart = null;
 
-function makeChart(id, type, data) {
-    var cfg = {
-        type: type,
-        data: data,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: '#a0aec0', font: { size: 11 } } } }
-        }
-    };
-    if (type === 'radar') {
-        cfg.options.scales = {
-            r: {
+function renderChart(index) {
+    if (typeof Chart === 'undefined') return setTimeout(function() { renderChart(index); }, 200);
+    if (_chart) { _chart.destroy(); _chart = null; }
+
+    var id = ['chartRadar', 'chartBar', 'chartDoughnut'][index];
+    var canvas = document.getElementById(id);
+    if (!canvas || !canvas.offsetParent) return setTimeout(function() { renderChart(index); }, 100);
+
+    var skillNames = JSON.parse('{{ skill_names_json|escapejs }}');
+    var skillLevels = JSON.parse('{{ skill_levels_json|escapejs }}');
+    var catLabels = JSON.parse('{{ cat_labels_json|escapejs }}');
+    var catValues = JSON.parse('{{ cat_values_json|escapejs }}');
+
+    function chartConfig(type, data) {
+        var cfg = {
+            type: type, data: data,
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#a0aec0', font: { size: 11 } } } }
+            }
+        };
+        if (type === 'radar') {
+            cfg.options.scales = { r: {
                 angleLines: { color: 'rgba(160, 174, 192, 0.2)' },
                 grid: { color: 'rgba(160, 174, 192, 0.1)' },
                 pointLabels: { color: '#a0aec0', font: { size: 13, weight: '600' } },
                 ticks: { display: false },
                 suggestMin: 0, suggestMax: 100
-            }
-        };
-        cfg.options.animation = { duration: 2000, easing: 'easeOutQuart' };
+            }};
+            cfg.options.animation = { duration: 2000, easing: 'easeOutQuart' };
+        }
+        if (type === 'bar') {
+            cfg.options.indexAxis = 'y';
+            cfg.options.scales = {
+                x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#a0aec0' } },
+                y: { grid: { display: false }, ticks: { color: '#a0aec0', font: { size: 11, weight: '600' } } }
+            };
+            cfg.options.plugins.legend.display = false;
+        }
+        if (type === 'doughnut') {
+            cfg.options.cutout = '55%';
+        }
+        return cfg;
     }
-    if (type === 'bar') {
-        cfg.options.indexAxis = 'y';
-        cfg.options.scales = {
-            x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#a0aec0' } },
-            y: { grid: { display: false }, ticks: { color: '#a0aec0', font: { size: 11, weight: '600' } } }
-        };
-        cfg.options.plugins.legend.display = false;
+
+    if (index === 0) {
+        _chart = new Chart(canvas, chartConfig('radar', {
+            labels: skillNames,
+            datasets: [{ label: 'Mevcut Yetkinlik', data: skillLevels, fill: true,
+                backgroundColor: 'rgba(201, 165, 92, 0.25)', borderColor: '#c9a55c',
+                borderWidth: 4, pointBackgroundColor: '#fff', pointRadius: 6 }]
+        }));
+    } else if (index === 1) {
+        var sorted = skillNames.map(function(n,i){ return {n:n,l:skillLevels[i]}; }).sort(function(a,b){ return b.l - a.l; });
+        _chart = new Chart(canvas, chartConfig('bar', {
+            labels: sorted.map(function(s){ return s.n; }),
+            datasets: [{ label: 'Seviye', data: sorted.map(function(s){ return s.l; }),
+                backgroundColor: sorted.map(function(s){ return s.l >= 80 ? 'rgba(16,185,129,0.7)' : s.l >= 50 ? 'rgba(201,165,92,0.7)' : 'rgba(245,158,11,0.7)'; }),
+                borderColor: sorted.map(function(s){ return s.l >= 80 ? '#10b981' : s.l >= 50 ? '#c9a55c' : '#f59e0b'; }),
+                borderWidth: 1, borderRadius: 4 }]
+        }));
+    } else if (index === 2) {
+        var colors = ['#c9a55c', '#10b981', '#f59e0b', '#60a5fa', '#a78bfa', '#f472b6', '#34d399', '#fbbf24'];
+        _chart = new Chart(canvas, chartConfig('doughnut', {
+            labels: catLabels,
+            datasets: [{ data: catValues,
+                backgroundColor: catLabels.map(function(_,i){ return colors[i % colors.length]; }),
+                borderWidth: 0 }]
+        }));
     }
-    if (type === 'doughnut') {
-        cfg.options.cutout = '55%';
-    }
-    return new Chart(document.getElementById(id), cfg);
 }
 
-window.addEventListener('load', function() {
-    makeChart('chartRadar', 'radar', {
-        labels: skillNames,
-        datasets: [{
-            label: 'Mevcut Yetkinlik',
-            data: skillLevels,
-            fill: true,
-            backgroundColor: 'rgba(201, 165, 92, 0.25)',
-            borderColor: '#c9a55c',
-            borderWidth: 4,
-            pointBackgroundColor: '#fff',
-            pointRadius: 6
-        }]
-    });
-
-    var sorted = skillNames.map(function(n, i) { return { n: n, l: skillLevels[i] }; }).sort(function(a,b) { return b.l - a.l; });
-
-    makeChart('chartBar', 'bar', {
-        labels: sorted.map(function(s) { return s.n; }),
-        datasets: [{
-            label: 'Seviye',
-            data: sorted.map(function(s) { return s.l; }),
-            backgroundColor: sorted.map(function(s) {
-                return s.l >= 80 ? 'rgba(16,185,129,0.7)' : s.l >= 50 ? 'rgba(201,165,92,0.7)' : 'rgba(245,158,11,0.7)';
-            }),
-            borderColor: sorted.map(function(s) {
-                return s.l >= 80 ? '#10b981' : s.l >= 50 ? '#c9a55c' : '#f59e0b';
-            }),
-            borderWidth: 1,
-            borderRadius: 4
-        }]
-    });
-
-    var colors = ['#c9a55c', '#10b981', '#f59e0b', '#60a5fa', '#a78bfa', '#f472b6', '#34d399', '#fbbf24'];
-
-    makeChart('chartDoughnut', 'doughnut', {
-        labels: catLabels,
-        datasets: [{
-            data: catValues,
-            backgroundColor: catLabels.map(function(_,i) { return colors[i % colors.length]; }),
-            borderWidth: 0
-        }]
-    });
-});
 </script>
 {% endif %}
+</div>
 {% endblock %}
