@@ -119,7 +119,7 @@ def skill_tree(request):
         "skill_categories_json": skill_categories_json,
         "strongest_skills": strongest_skills, "weakest_skills": weakest_skills,
         "gap_score": gap_score, "matched_skills": matched_skills, "missing_skills": missing_skills,
-        "cat_labels_json": cat_labels_json, "cat_values_json": cat_values_json,
+        "cat_count": cat_count, "cat_labels_json": cat_labels_json, "cat_values_json": cat_values_json,
         "all_skills_data": all_skills_data,
         "career_recommendations": career_recommendations,
     })

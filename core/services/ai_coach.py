@@ -122,6 +122,29 @@ class AICoach:
         """
         return self._execute_completion(prompt, "Puanlama yapılamadı.")
 
+    def extract_skills_from_cv(self, cv_text: str) -> str:
+        if not cv_text.strip():
+            return '{"skills": []}'
+
+        prompt = f"""
+        Aşağıdaki CV metnini analiz ederek teknik yetenekleri JSON listesi olarak çıkar.
+
+        CV METNİ (yalnızca ilk 4000 karakter):
+        {cv_text[:4000]}
+
+        KURALLAR (dikkat et, atlama):
+        1. SADECE teknik yetenekleri çıkar (programlama dilleri, frameworkler, araçlar, DB, cloud, vs.).
+        2. Doğal dilleri (Türkçe, İngilizce, Almanca, İspanyolca, Fransızca, vs.) KESİNLİKLE EKLEME.
+        3. Skill adlarını standart forma çevir: "CSharp"->"C#", "C Plus Plus"->"C++", "Dotnet"->".NET", "FSharp"->"F#", "Typescript"->"TypeScript".
+        4. "level" (1-5): 1=temel, 2=aşina, 3=çalışan, 4=güçlü, 5=uzman. En az 3 farklı level değeri kullan, aynı puanı tekrarlama.
+        5. "category": Backend, Frontend, DevOps, Database, AI-ML, Tools, Mobile, Testing, Other.
+        Bir dil Backend ise "kategori Backend, Frontend ise Frontend, hiçbiri değilse Tools" kullan.
+
+        Çıktıyı sadece aşağıdaki JSON şemasında ver, markdown kullanma, JSON dışında hiçbir şey yazma:
+        {{"skills": [{{"name": "Python", "category": "Backend", "level": 4}}, ...]}}
+        """
+        return self._execute_completion(prompt, '{"skills": []}')
+
     def _execute_completion(self, prompt, error_message) -> str:
         """
         LiteLLM completion çağrısını güvenli bir şekilde yürüten yardımcı metot.
